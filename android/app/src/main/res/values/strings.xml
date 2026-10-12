@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">My Teacher Life</string>
+    <string name="title_activity_main">My Teacher Life</string>
+    <string name="package_name">com.redpenstudio.myteacherlife</string>
+    <string name="custom_url_scheme">com.redpenstudio.myteacherlife</string>
+</resources>
