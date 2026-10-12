@@ -1,5 +1,33 @@
 # My Teacher Life 🖍️
 
+## 🌐 Developer Website & Compliance
+
+The `docs/` folder is a small public website (landing page, privacy policy, `app-ads.txt`) hosted free on **GitHub Pages**. It is published automatically by `.github/workflows/deploy-pages.yml` on every push to `main`. The game itself stays 100% offline; nothing here is part of the app.
+
+**One-time setup:** on GitHub, open the repo → **Settings → Pages** → under *Build and deployment*, set **Source: "GitHub Actions"**. Save. Then re-run the "Deploy website to GitHub Pages" workflow from the **Actions** tab (or push to `main`).
+
+**Expected URLs after deployment:**
+
+| Page | URL |
+|------|-----|
+| Landing page | `https://imroulofficial.github.io/my-teacher-life/` |
+| Privacy Policy | `https://imroulofficial.github.io/my-teacher-life/privacy-policy.html` |
+| app-ads.txt | `https://imroulofficial.github.io/my-teacher-life/app-ads.txt` |
+
+> ⚠️ **IMPORTANT for AdMob app-ads.txt verification**
+> - AdMob may require `app-ads.txt` at the **root** of the developer domain (`https://imroulofficial.github.io/app-ads.txt`), not inside the project path.
+> - If verification fails with the project URL above, create a **new** public repo named **`imroulofficial.github.io`**, copy `app-ads.txt` (from this repo's root) into it, and enable Pages for it. Then use `https://imroulofficial.github.io/app-ads.txt` for AdMob.
+> - The developer website you enter in Play Console must be on the same domain (`imroulofficial.github.io`), and AdMob can take up to 24 hours to crawl it.
+
+**Where to use these URLs:**
+- **Play Console → App content → Privacy Policy:** paste the Privacy Policy URL.
+- **Play Console → Store settings → Developer website:** paste the landing page URL.
+- **AdMob → Apps → App settings → app-ads.txt:** verify the app-ads.txt URL.
+
+The contact email `mdimroulhassanofficial@gmail.com` appears in `docs/index.html` and `docs/privacy-policy.html`. Replace it there if it changes.
+
+---
+
 An offline casual game for Android by **Red Pen Studio**. You play a teacher: grade papers, catch cheaters, scan bags, sort the library and grow your school.
 
 - **Stack:** HTML5 + CSS3 (Tailwind, bundled locally) + JavaScript (DOM + Canvas API), built with Vite
