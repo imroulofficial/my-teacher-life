@@ -3,7 +3,7 @@ import { h, btn, toast, confirmModal } from '../core/ui.js';
 import { getState, saveState, resetState } from '../core/storage.js';
 import { go } from '../core/router.js';
 import { sfx } from '../core/audio.js';
-import { showPrivacyOptions } from '../core/ads.js';
+import { showPrivacyOptions, privacyOptionsAvailable } from '../core/ads.js';
 import { APP } from '../core/config.js';
 import { topBar } from './common.js';
 
@@ -31,13 +31,24 @@ export default {
       toast('Name saved!', 'success');
     });
 
+    // Only shown when Google's consent form applies to this player (EEA/UK) and is configured in AdMob.
+    const privacyRow = h(
+      'div',
+      { class: 'setting-row hidden' },
+      h('span', {}, '🔒 Ad privacy choices'),
+      btn('Open', { color: 'blue', size: 'sm', onClick: () => showPrivacyOptions() }),
+    );
+    privacyOptionsAvailable()
+      .then((ok) => privacyRow.classList.toggle('hidden', !ok))
+      .catch(() => {});
+
     const panel = h(
       'div',
       { class: 'settings' },
       h('div', { class: 'setting-row' }, h('span', {}, '👩‍🏫 Teacher name'), nameInput),
       toggle('🔊 Sound effects', 'sound'),
       toggle('📳 Vibration', 'vibration'),
-      h('div', { class: 'setting-row' }, h('span', {}, '🔒 Ad privacy choices'), btn('Open', { color: 'blue', size: 'sm', onClick: () => showPrivacyOptions() })),
+      privacyRow,
       h(
         'div',
         { class: 'setting-row' },

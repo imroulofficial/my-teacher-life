@@ -2220,10 +2220,53 @@ input {
 }
 
 @media (max-height: 640px) {
-  .home-school { font-size: 90px; }
-  .logo-line1 { font-size: 36px; }
-  .logo-line2 { font-size: 50px; }
   .picture-frame { width: 110px; height: 110px; font-size: 70px; }
   .btn-xl { font-size: 22px; padding: 12px 24px; }
   .corridor { height: 110px; }
+}
+
+/* ---------------------------------------------------------------- home: fit short screens
+   The home screen scales with the viewport height so every button stays on screen
+   (e.g. phones that lose height to edge-to-edge system bars on Android 15+). */
+.home {
+  justify-content: space-between;
+  padding-bottom: clamp(6px, 1.5vh, 16px);
+}
+.logo { margin-top: 0; }
+.logo-line1 { font-size: clamp(28px, 6vh, 44px); }
+.logo-line2 { font-size: clamp(38px, 8.2vh, 64px); }
+.logo-pen { font-size: clamp(28px, 6vh, 46px); }
+.home-school { font-size: clamp(50px, 13vh, 120px); margin-top: 0; }
+.home-teacher {
+  font-size: clamp(34px, 7.8vh, 64px);
+  margin-top: calc(-1 * clamp(28px, 6.6vh, 54px));
+  margin-left: clamp(90px, 18vh, 150px);
+}
+.home-stats { margin: clamp(2px, 0.8vh, 6px) 12px clamp(4px, 1.2vh, 10px); gap: 6px; }
+.stat-chip { padding: clamp(3px, 0.7vh, 6px) 10px; font-size: clamp(12px, 2.4vh, 16px); white-space: nowrap; }
+.home-play { gap: clamp(4px, 1vh, 8px); }
+.home-play .play-btn {
+  font-size: clamp(21px, 4.4vh, 30px);
+  padding: clamp(10px, 2.4vh, 20px) clamp(26px, 9vw, 40px);
+}
+.home-grid { margin-top: clamp(8px, 2vh, 18px); gap: clamp(8px, 1.6vh, 14px); }
+.home-grid .btn3d { padding-top: clamp(7px, 1.5vh, 12px); padding-bottom: clamp(7px, 1.5vh, 12px); }
+.studio { padding-top: clamp(4px, 1vh, 14px); font-size: 13px; }
+
+/* ---------------------------------------------------------------- game screens: fit short / narrow screens */
+/* Scenes may shrink to the space left between the HUD and the bottom buttons. */
+.game-stage > * { min-height: 0; }
+/* Two side-by-side action buttons (e.g. SUSPICIOUS / APPROVE) must share the row on narrow phones. */
+.controls-row .action-btn { min-width: 0; }
+.controls-row .btn3d { padding-left: 12px; padding-right: 12px; font-size: clamp(16px, 5.4vw, 22px); }
+.bag-grid { overflow-y: auto; }
+@media (max-height: 640px) {
+  .game-controls { gap: 8px; padding-top: 8px; padding-bottom: 10px; }
+  .student { padding-top: 26px; }
+  .student .student-face { font-size: 36px; }
+  .classroom { gap: 4px; }
+  .shelf { min-height: 40px; }
+  .book-cart { max-height: 104px; min-height: 60px; }
+  .chalkboard { min-height: 88px; }
+  .corridor { height: 96px; }
 }

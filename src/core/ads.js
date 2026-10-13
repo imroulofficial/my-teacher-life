@@ -10,7 +10,49 @@ const isNative = () => Capacitor.isNativePlatform();
 let initPromise = null;
 let busy = false;
 
-/** Initialize AdMob once on app start (App ID lives in AndroidManifest.xml). */
+// Last known Google UMP consent info: { status, isConsentFormAvailable } or null if unknown.
+let consentInfo = null;
+// Only one consent request/form may run at a time.
+let consentQueue = Promise.resolve();
+
+function inConsentQueue(task) {
+  const run = consentQueue.then(task, task);
+  consentQueue = run.catch(() => {});
+  return run;
+}
+
+/** Asks Google UMP for the current consent status. Never throws; returns null on failure. */
+function refreshConsentInfo() {
+  return inConsentQueue(async () => {
+    try {
+      consentInfo = await AdMob.requestConsentInfo();
+    } catch (e) {
+      // e.g. no consent message configured in AdMob yet, or the device is offline
+      console.warn('Consent info unavailable', e);
+    }
+    return consentInfo;
+  });
+}
+
+/** Shows the UMP consent form. Never throws; returns true if it was shown. */
+function showConsentFormSafe() {
+  return inConsentQueue(async () => {
+    try {
+      const after = await AdMob.showConsentForm();
+      if (after && after.status) consentInfo = { ...consentInfo, ...after };
+      return true;
+    } catch (e) {
+      console.warn('Consent form could not be shown', e);
+      return false;
+    }
+  });
+}
+
+/**
+ * Starts ads once on app start (App ID lives in AndroidManifest.xml).
+ * Sequence: 1) request consent info  2) show the consent form if Google says it's required
+ *           3) initialize AdMob. Ads are only requested after this has finished.
+ */
 export function initAds() {
   if (!isNative()) return Promise.resolve();
   if (!initPromise) initPromise = doInit();
@@ -18,6 +60,10 @@ export function initAds() {
 }
 
 async function doInit() {
+  const info = await refreshConsentInfo();
+  if (info && info.status === AdmobConsentStatus.REQUIRED && info.isConsentFormAvailable) {
+    await showConsentFormSafe();
+  }
   try {
     await AdMob.initialize({
       initializeForTesting: ADS_TESTING,
@@ -26,33 +72,39 @@ async function doInit() {
   } catch (e) {
     console.warn('AdMob init failed', e);
     initPromise = null; // allow a retry later (e.g. when the network returns)
-    return;
-  }
-  // Google UMP consent (required for EEA/UK users). Silently skipped elsewhere.
-  try {
-    const info = await AdMob.requestConsentInfo();
-    if (info.status === AdmobConsentStatus.REQUIRED && info.isConsentFormAvailable) {
-      await AdMob.showConsentForm();
-    }
-  } catch (e) {
-    console.warn('Consent flow skipped', e);
   }
 }
 
-/** Lets the player re-open the privacy/consent form from Settings. */
+/**
+ * True when a privacy-options (consent) form exists for this player, i.e. Google says consent
+ * applies to them (EEA/UK) and a form is configured in AdMob. Used to show/hide the Settings entry.
+ */
+export async function privacyOptionsAvailable() {
+  if (!isNative()) return false;
+  await initAds();
+  const info = consentInfo || (await refreshConsentInfo());
+  return !!(info && info.isConsentFormAvailable && info.status !== AdmobConsentStatus.NOT_REQUIRED);
+}
+
+/** Lets the player review/change their ad privacy choices from Settings. Never shows raw errors. */
 export async function showPrivacyOptions() {
   if (!isNative()) {
-    toast('Privacy options are available in the Android app.');
+    toast('Ad privacy choices are available in the Android app.');
     return;
   }
-  try {
-    await AdMob.resetConsentInfo();
-    const info = await AdMob.requestConsentInfo();
-    if (info.isConsentFormAvailable) await AdMob.showConsentForm();
-    else toast('No privacy form is required in your region.');
-  } catch (e) {
-    toast('Privacy options unavailable right now.', 'error');
+  await initAds();
+  const info = await refreshConsentInfo();
+  if (!info) {
+    toast('Ad privacy choices are not available right now. Please check your internet connection and try again later.');
+    return;
   }
+  if (info.status === AdmobConsentStatus.NOT_REQUIRED || !info.isConsentFormAvailable) {
+    toast('No ad privacy choices are needed in your region.');
+    return;
+  }
+  const shown = await showConsentFormSafe();
+  if (shown) toast('Your ad privacy choices are saved.', 'success');
+  else toast('Ad privacy choices are not available right now. Please try again later.');
 }
 
 function emit(name) {
