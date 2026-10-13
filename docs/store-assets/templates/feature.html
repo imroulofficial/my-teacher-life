@@ -1,0 +1,43 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Feature graphic</title>
+<link rel="stylesheet" href="_fonts.css">
+<style>
+  body { width: 1024px; height: 500px; overflow: hidden; }
+  .fg { position: relative; width: 1024px; height: 500px; overflow: hidden; font-family: 'Fredoka', sans-serif;
+        background: radial-gradient(circle at 18% 10%, rgba(255,255,255,.35), transparent 40%),
+                    linear-gradient(120deg, #FF6B35 0%, #FF9F1C 45%, #FFD23F 100%); }
+  .dots { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.18) 2px, transparent 2.5px); background-size: 34px 34px; }
+  .title { position: absolute; left: 56px; top: 92px; line-height: .92; color: #fff; font-weight: 700;
+           -webkit-text-stroke: 3px #c2410c; text-shadow: 0 7px 0 #c2410c, 0 16px 26px rgba(124,45,18,.35); }
+  .t1 { font-size: 78px; }
+  .t2 { font-size: 112px; color: #FFE45C; }
+  .sub { position: absolute; left: 60px; top: 352px; padding: 12px 26px; border-radius: 999px; background: #fff;
+         color: #c2410c; font-weight: 700; font-size: 28px; box-shadow: 0 6px 0 #c2410c, 0 14px 22px rgba(124,45,18,.25); }
+  .art { position: absolute; right: 0; top: 0; width: 520px; height: 500px; }
+  .emoji { position: absolute; line-height: 1; filter: drop-shadow(0 10px 8px rgba(124,45,18,.35)); }
+  .studio { position: absolute; left: 62px; top: 438px; color: rgba(124,45,18,.75); font-weight: 600; font-size: 18px; letter-spacing: 3px; }
+</style></head>
+<body>
+<div class="fg">
+  <div class="dots"></div>
+  <div class="title"><div class="t1">My Teacher</div><div class="t2">Life</div></div>
+  <div class="sub">The Ultimate Classroom Simulation</div>
+  <div class="studio">RED PEN STUDIO</div>
+  <div class="art" id="art"></div>
+  <div class="emoji" style="left:528px; top:214px; font-size:150px;">👩‍🏫</div>
+  <div class="emoji" style="left:946px; top:22px; font-size:56px; transform:rotate(12deg)">🍎</div>
+  <div class="emoji" style="left:600px; top:60px; font-size:46px; transform:rotate(-12deg)">⭐</div>
+  <div class="emoji" style="left:520px; top:410px; font-size:40px; transform:rotate(-20deg)">✏️</div>
+</div>
+<script src="_art.js"></script>
+<script>
+  const A = window.MTL_ART;
+  document.getElementById('art').innerHTML = `
+  <svg width="520" height="500" viewBox="0 0 520 500" xmlns="http://www.w3.org/2000/svg">
+    ${A.defs}
+    <g transform="translate(172 48) scale(0.95)">${A.board('A+')}</g>
+    <g transform="translate(318 368) scale(0.85)">${A.books}</g>
+    <g transform="translate(176 336) rotate(-10) scale(0.82)">${A.pen}</g>
+  </svg>`;
+</script>
+</body></html>
