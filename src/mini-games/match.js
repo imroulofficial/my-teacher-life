@@ -72,12 +72,12 @@ export default {
       header.replaceChildren(h('span', {}, 'Match the Animal to its Home'), h('span', { class: 'font-hand' }, s.student));
       left.replaceChildren(
         ...s.items.map((it, i) =>
-          h('div', { class: 'match-card match-animal', dataset: { idx: i } }, h('span', { class: 'match-emoji' }, it.animal), h('span', { class: 'match-label' }, it.name), h('span', { class: 'match-dot' })),
+          h('div', { class: 'match-card match-animal', dataset: { idx: i } }, h('span', { class: 'match-emoji' }, it.animal), h('span', { class: `match-label${it.name.length >= 7 ? ' long' : ''}` }, it.name), h('span', { class: 'match-dot' })),
         ),
       );
       right.replaceChildren(
         ...s.homes.map((name) =>
-          h('div', { class: 'match-card match-home', dataset: { home: name } }, h('span', { class: 'match-dot' }), h('span', { class: 'match-emoji' }, s.homeInfo[name]), h('span', { class: 'match-label' }, name)),
+          h('div', { class: 'match-card match-home', dataset: { home: name } }, h('span', { class: 'match-dot' }), h('span', { class: 'match-emoji' }, s.homeInfo[name]), h('span', { class: `match-label${name.length >= 7 ? ' long' : ''}` }, name)),
         ),
       );
       left.querySelectorAll('.match-animal').forEach((el) => attachDraw(el));

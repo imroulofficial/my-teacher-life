@@ -2270,3 +2270,27 @@ input {
   .chalkboard { min-height: 88px; }
   .corridor { height: 96px; }
 }
+
+/* ---------------------------------------------------------------- Line Match: keep labels inside the paper
+   Columns may shrink (min-width: 0), long labels (7+ letters, tagged .long) use a smaller font,
+   and anything still too wide ends in an ellipsis instead of spilling off the notebook. */
+.match-sheet { padding: 14px 12px 18px 38px; }
+.match-cols { gap: clamp(22px, 8vw, 48px); }
+.match-col { flex: 1 1 0; min-width: 0; }
+.match-col:last-child { flex-grow: 1.15; } /* answers (homes) get a slightly wider share */
+.match-card {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  gap: 4px;
+  padding: 4px 5px;
+}
+.match-emoji { flex-shrink: 0; font-size: clamp(22px, 7vw, 30px); }
+.match-dot { flex-shrink: 0; }
+.match-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.match-label.long { font-size: 11px; letter-spacing: -0.2px; }
