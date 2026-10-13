@@ -120,20 +120,38 @@ function emit(name) {
  * @returns {Promise<boolean>} true if the reward was earned
  */
 export async function showRewardedAd(adUnitId, onRewardEarned) {
-  if (busy) return false;
+  const { earned } = await showRewardedAdDetailed(adUnitId, onRewardEarned);
+  return earned;
+}
+
+/**
+ * Same as showRewardedAd, but tells the caller what happened:
+ *   { earned: true }                 video watched to the end, reward given
+ *   { earned: false, failed: true }  no ad could be loaded/shown (offline, no fill…)
+ *   { earned: false, failed: false } the player closed the video early (or another ad was running)
+ * With { quiet: true } no error toast is shown, so the caller can show its own message.
+ * Never throws.
+ */
+export async function showRewardedAdDetailed(adUnitId, onRewardEarned, { quiet = false } = {}) {
+  if (busy) return { earned: false, failed: false, busy: true };
   busy = true;
   emit('mtl:ad-open');
   let earned = false;
+  let failed = false;
   let reward = null;
   try {
-    if (isNative()) {
-      ({ earned, reward } = await showNative(adUnitId));
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      failed = true; // no point waiting for a request that cannot succeed
+      if (!quiet) toast('No video available right now. Check your internet connection.', 'error', 2600);
+    } else if (isNative()) {
+      ({ earned, failed, reward } = await showNative(adUnitId, quiet));
     } else {
       ({ earned, reward } = await showWebSimulation(adUnitId));
     }
   } catch (e) {
     console.warn('Rewarded ad error', e);
     earned = false;
+    failed = true;
   } finally {
     adLoadingOverlay(false);
     busy = false;
@@ -149,13 +167,18 @@ export async function showRewardedAd(adUnitId, onRewardEarned) {
       console.error('Reward handler failed', e);
     }
   }
-  return earned;
+  return { earned, failed: !earned && failed };
 }
 
-async function showNative(adUnitId) {
+async function showNative(adUnitId, quiet = false) {
   await initAds();
   const handles = [];
   let earned = false;
+  let failed = false;
+  const fail = (msg) => {
+    failed = true;
+    if (!quiet) toast(msg, 'error', 2600);
+  };
   let reward = null;
 
   const result = await new Promise((resolve) => {
@@ -175,20 +198,20 @@ async function showNative(adUnitId) {
       });
       await add(RewardAdPluginEvents.Dismissed, () => settle(400));
       await add(RewardAdPluginEvents.FailedToShow, () => {
-        toast('The video could not play. Please try again.', 'error');
+        fail('The video could not play. Please try again.');
         settle();
       });
 
       adLoadingOverlay(true);
       const loadTimeout = setTimeout(() => {
-        toast('No video available right now. Check your internet connection.', 'error', 2600);
+        fail('No video available right now. Check your internet connection.');
         settle();
       }, 15000);
       try {
         await AdMob.prepareRewardVideoAd({ adId: adUnitId, isTesting: ADS_TESTING });
       } catch (e) {
         clearTimeout(loadTimeout);
-        toast('No video available right now. Check your internet connection.', 'error', 2600);
+        fail('No video available right now. Check your internet connection.');
         settle();
         return;
       }
@@ -202,6 +225,7 @@ async function showNative(adUnitId) {
           reward = item;
         }
       } catch (e) {
+        failed = true;
         settle();
       }
     })();
@@ -214,7 +238,7 @@ async function showNative(adUnitId) {
       /* ignore */
     }
   }
-  return { earned, reward, result };
+  return { earned, failed, reward, result };
 }
 
 /** In a desktop browser (development) we simulate a 3-second reward video. */
