@@ -6,6 +6,7 @@ import { CHAPTERS, GAME_INFO, gameForLevel } from '../core/levels.js';
 import { MAX_STORY_LEVEL } from '../core/config.js';
 import { topBar } from './common.js';
 import { sfx } from '../core/audio.js';
+import { t, digits } from '../i18n/index.js';
 
 function levelNode(level, s) {
   const unlocked = level <= s.unlockedLevel;
@@ -16,13 +17,13 @@ function levelNode(level, s) {
     'button',
     { class: `level-node ${unlocked ? 'unlocked' : 'locked'} ${current ? 'current' : ''}`, style: unlocked ? { '--node': game.color } : {}, dataset: { level } },
     h('span', { class: 'node-icon' }, unlocked ? game.icon : '🔒'),
-    h('span', { class: 'node-num' }, level),
+    h('span', { class: 'node-num' }, digits(level)),
     h('span', { class: 'node-stars' }, unlocked ? [0, 1, 2].map((i) => h('span', { class: i < stars ? 'on' : '' }, '★')) : ''),
   );
   node.addEventListener('click', () => {
     if (!unlocked) {
       sfx('wrong');
-      toast(`🔒 Finish level ${s.unlockedLevel} first!`);
+      toast(t('level.finishFirst', { n: s.unlockedLevel }));
       return;
     }
     sfx('tap');
@@ -34,7 +35,7 @@ function levelNode(level, s) {
 export default {
   render(root, params = {}) {
     const s = getState();
-    const bar = topBar({ title: '🗺️ Levels', onBack: () => go('home') });
+    const bar = topBar({ title: t('map.title'), onBack: () => go('home') });
     const list = h('div', { class: 'map-list' });
 
     for (const ch of CHAPTERS) {
@@ -51,8 +52,8 @@ export default {
             'div',
             { class: 'chapter-head', style: { background: ch.bg } },
             h('div', { class: 'chapter-icon' }, ch.icon),
-            h('div', {}, h('div', { class: 'chapter-num' }, `Chapter ${ch.id}`), h('div', { class: 'chapter-name' }, ch.name)),
-            h('div', { class: 'chapter-stars' }, `★ ${chStars}/${done.length * 3}`),
+            h('div', {}, h('div', { class: 'chapter-num' }, t('level.chapter', { n: ch.id })), h('div', { class: 'chapter-name' }, ch.name)),
+            h('div', { class: 'chapter-stars' }, `★ ${digits(chStars)}/${digits(done.length * 3)}`),
           ),
           h('div', { class: 'level-grid' }, nodes),
         ),
@@ -69,14 +70,14 @@ export default {
           'div',
           { class: 'chapter-head', style: { background: 'linear-gradient(160deg,#ffd23f,#f15bb5)' } },
           h('div', { class: 'chapter-icon' }, '🌟'),
-          h('div', {}, h('div', { class: 'chapter-num' }, `Levels ${MAX_STORY_LEVEL + 1}+`), h('div', { class: 'chapter-name' }, 'Teacher of the Year')),
+          h('div', {}, h('div', { class: 'chapter-num' }, t('level.endlessRange', { n: MAX_STORY_LEVEL + 1 })), h('div', { class: 'chapter-name' }, t('level.endlessTitle'))),
         ),
         h(
           'div',
           { class: 'p-4 text-center' },
           endlessUnlocked
-            ? btn(`Play Level ${s.unlockedLevel}`, { color: 'green', size: 'lg', icon: '▶', onClick: () => go('intro', { level: s.unlockedLevel }) })
-            : h('div', { class: 'opacity-70' }, `🔒 Complete all ${MAX_STORY_LEVEL} story levels to unlock endless mode.`),
+            ? btn(t('level.playLevel', { n: s.unlockedLevel }), { color: 'green', size: 'lg', icon: '▶', onClick: () => go('intro', { level: s.unlockedLevel }) })
+            : h('div', { class: 'opacity-70' }, t('level.endlessLocked', { n: MAX_STORY_LEVEL })),
         ),
       ),
     );

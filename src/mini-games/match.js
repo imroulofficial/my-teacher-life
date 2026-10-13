@@ -4,16 +4,11 @@
 import { h, btn, pick, shuffle, randInt } from '../core/ui.js';
 import { AD_UNITS } from '../core/config.js';
 import { getState, saveState } from '../core/storage.js';
-import { ANIMAL_HOMES, STUDENT_NAMES } from './data.js';
+import { animalHomes, studentNames } from './data.js';
+import { t } from '../i18n/index.js';
 
 export default {
   id: 'match',
-  howTo: [
-    'A student drew lines matching animals to their homes.',
-    'All lines correct? Press ✔ TICK. Any mistake? Press ✘ CROSS.',
-    'After a correct CROSS, fix the red lines: drag (or tap) from the animal to its real home.',
-    'Short on time? Use 🤖 Auto-Grade All.',
-  ],
 
   start(api) {
     const d = api.difficulty;
@@ -29,12 +24,12 @@ export default {
     sheet.append(header, h('div', { class: 'match-area' }, cols, canvas), hint);
     api.stage.append(h('div', { class: 'match-scene' }, sheet));
 
-    const tickBtn = btn('TICK', { color: 'green', icon: '✔', size: 'xl', cls: 'action-btn', onClick: () => judge(true) });
-    const crossBtn = btn('CROSS', { color: 'red', icon: '✘', size: 'xl', cls: 'action-btn', onClick: () => judge(false) });
+    const tickBtn = btn(t('match.tick'), { color: 'green', icon: '✔', size: 'xl', cls: 'action-btn', onClick: () => judge(true) });
+    const crossBtn = btn(t('match.cross'), { color: 'red', icon: '✘', size: 'xl', cls: 'action-btn', onClick: () => judge(false) });
     api.setControls(h('div', { class: 'controls-row' }, tickBtn, crossBtn));
 
     let auto = false;
-    api.addPower({ label: 'Auto-Grade All', icon: '📺', adUnit: AD_UNITS.AUTO_GRADE, onReward: autoGrade });
+    api.addPower({ label: t('match.autoGrade'), icon: '📺', adUnit: AD_UNITS.AUTO_GRADE, onReward: autoGrade });
 
     const ctx = canvas.getContext('2d');
     let sheetData = null;
@@ -45,7 +40,7 @@ export default {
     let tapFrom = null;
 
     function makeSheet() {
-      const chosen = shuffle(ANIMAL_HOMES).slice(0, pairs + (d > 0.6 ? 1 : 0));
+      const chosen = shuffle(animalHomes()).slice(0, pairs + (d > 0.6 ? 1 : 0));
       const items = chosen.slice(0, pairs);
       const decoy = chosen[pairs] || null;
       const homes = shuffle([...items.map((x) => x.homeName), ...(decoy ? [decoy.homeName] : [])]);
@@ -63,13 +58,13 @@ export default {
           [answers[a], answers[b]] = [answers[b], answers[a]];
         }
       }
-      return { items, homes, homeInfo, answers, hasMistake, student: pick(STUDENT_NAMES), fixed: new Set() };
+      return { items, homes, homeInfo, answers, hasMistake, student: pick(studentNames()), fixed: new Set() };
     }
 
     function render() {
       sheetData = makeSheet();
       const s = sheetData;
-      header.replaceChildren(h('span', {}, 'Match the Animal to its Home'), h('span', { class: 'font-hand' }, s.student));
+      header.replaceChildren(h('span', {}, t('match.title')), h('span', { class: 'font-hand' }, s.student));
       left.replaceChildren(
         ...s.items.map((it, i) =>
           h('div', { class: 'match-card match-animal', dataset: { idx: i } }, h('span', { class: 'match-emoji' }, it.animal), h('span', { class: `match-label${it.name.length >= 7 ? ' long' : ''}` }, it.name), h('span', { class: 'match-dot' })),
@@ -176,13 +171,13 @@ export default {
       if (right && s.hasMistake) {
         // Fix phase: draw the right lines.
         phase = 'fix';
-        hint.textContent = '✏️ Fix the red lines: drag from the animal to its real home!';
+        hint.textContent = t('match.fix');
         markWrongAnimals();
         draw();
       } else {
         phase = 'reveal';
         if (!right) {
-          hint.textContent = s.hasMistake ? '❗ There was a mistake (red line).' : '❗ Every line was correct.';
+          hint.textContent = s.hasMistake ? t('match.mistake') : t('match.allCorrect');
           s.items.forEach((it, i) => s.answers[i] !== it.homeName && s.fixed.add(i));
         }
         draw();
@@ -216,7 +211,7 @@ export default {
       const allFixed = s.items.every((x, k) => s.answers[k] === x.homeName || s.fixed.has(k));
       if (allFixed) {
         phase = 'reveal';
-        hint.textContent = '🌟 All fixed!';
+        hint.textContent = t('match.allFixed');
         api.after(0.9, nextSheet);
       }
     }
@@ -274,7 +269,7 @@ export default {
     // Rewarded Auto-Grade: every remaining worksheet graded (and fixed) perfectly.
     function autoGrade() {
       auto = true;
-      api.toast('🤖 Auto-Grade: checking every worksheet perfectly!', 'success');
+      api.toast(t('match.autoToast'), 'success');
       if (phase === 'judge' || phase === 'fix') autoStep();
     }
 
@@ -292,7 +287,7 @@ export default {
       phase = 'reveal';
       markWrongAnimals();
       draw();
-      hint.textContent = '🤖 Auto-graded';
+      hint.textContent = t('match.autoDone');
       api.after(0.45, nextSheet);
     }
 

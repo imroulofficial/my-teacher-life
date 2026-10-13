@@ -73,6 +73,15 @@ The function `showRewardedAd(adUnitId, onRewardEarned)` is in `src/core/ads.js` 
 
 ---
 
+## Languages (বাংলা / English)
+
+On first launch the player picks **বাংলা** or **English**, and can switch any time in **Settings → 🌐 Language**. The choice is saved on the device (`localStorage` key `mtl_lang`).
+
+- `src/i18n/en.js` and `src/i18n/bn.js` hold **every on-screen text plus each language's own game content**: spelling words, Q&A questions, library books, animal homes, student names and test subjects. The Bangla content is written separately for Bangladeshi players, not translated from English.
+- `src/i18n/index.js` provides `t('key', { params })`, `setLanguage()`, `onLanguageChange()`, `digits()` (Bangla numerals) and `content()`.
+- Bangla uses the bundled fonts **Baloo Da 2** (interface) and **Galada** (handwriting), so it works offline.
+- To change a text, edit it in both files. A missing Bangla key falls back to English.
+
 ## 2. One-time setup: app signing (needed for Google Play)
 
 Google Play only accepts a **signed** `.aab`. You create a signing key (a "keystore") **once** and keep it safe **forever**. If you lose it, you can't update the app.

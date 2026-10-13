@@ -1,24 +1,25 @@
 // Coins, school upgrades, boosts and offline earnings.
 import { getState, saveState } from './storage.js';
 import { OFFLINE, BOOSTS } from './config.js';
+import { t } from '../i18n/index.js';
 
 export const SCHOOL_SIZES = [
-  { id: 'hut', name: 'Village Schoolhouse', icon: '🏡', cost: 0, incomeMult: 1, maxUpgrade: 3 },
-  { id: 'small', name: 'Small School', icon: '🏫', cost: 2500, incomeMult: 1.5, maxUpgrade: 5 },
-  { id: 'medium', name: 'Town School', icon: '🏢', cost: 12000, incomeMult: 2.2, maxUpgrade: 7 },
-  { id: 'large', name: 'City Academy', icon: '🏛️', cost: 50000, incomeMult: 3.2, maxUpgrade: 9 },
-  { id: 'campus', name: 'Grand Campus', icon: '🏰', cost: 200000, incomeMult: 5, maxUpgrade: 12 },
+  { id: 'hut', get name() { return t(`school.sizes.${this.id}`); }, icon: '🏡', cost: 0, incomeMult: 1, maxUpgrade: 3 },
+  { id: 'small', get name() { return t(`school.sizes.${this.id}`); }, icon: '🏫', cost: 2500, incomeMult: 1.5, maxUpgrade: 5 },
+  { id: 'medium', get name() { return t(`school.sizes.${this.id}`); }, icon: '🏢', cost: 12000, incomeMult: 2.2, maxUpgrade: 7 },
+  { id: 'large', get name() { return t(`school.sizes.${this.id}`); }, icon: '🏛️', cost: 50000, incomeMult: 3.2, maxUpgrade: 9 },
+  { id: 'campus', get name() { return t(`school.sizes.${this.id}`); }, icon: '🏰', cost: 200000, incomeMult: 5, maxUpgrade: 12 },
 ];
 
 export const UPGRADES = [
-  { id: 'classroom', name: 'Classrooms', icon: '✏️', desc: 'More desks, more students.', baseCost: 120, income: 12, levelBonus: 0.03 },
-  { id: 'sciencelab', name: 'Science Lab', icon: '🔬', desc: 'Bubbling beakers boost learning.', baseCost: 250, income: 22, levelBonus: 0.04 },
-  { id: 'library', name: 'Library', icon: '📚', desc: 'Shelves full of stories.', baseCost: 400, income: 30, levelBonus: 0.04 },
-  { id: 'computerlab', name: 'Computer Lab', icon: '💻', desc: 'Coding club unlocked!', baseCost: 700, income: 45, levelBonus: 0.05 },
-  { id: 'playground', name: 'Playground', icon: '🎠', desc: 'Happy students learn faster.', baseCost: 1000, income: 60, levelBonus: 0.05 },
-  { id: 'cafeteria', name: 'Cafeteria', icon: '🍱', desc: 'Healthy lunches for everyone.', baseCost: 1600, income: 85, levelBonus: 0.06 },
-  { id: 'artstudio', name: 'Art Studio', icon: '🎨', desc: 'Paint, clay and glitter.', baseCost: 2400, income: 120, levelBonus: 0.06 },
-  { id: 'sportshall', name: 'Sports Hall', icon: '🏀', desc: 'Trophies on every wall.', baseCost: 3500, income: 170, levelBonus: 0.07 },
+  { id: 'classroom', get name() { return t(`school.upgrades.${this.id}.name`); }, icon: '✏️', get desc() { return t(`school.upgrades.${this.id}.desc`); }, baseCost: 120, income: 12, levelBonus: 0.03 },
+  { id: 'sciencelab', get name() { return t(`school.upgrades.${this.id}.name`); }, icon: '🔬', get desc() { return t(`school.upgrades.${this.id}.desc`); }, baseCost: 250, income: 22, levelBonus: 0.04 },
+  { id: 'library', get name() { return t(`school.upgrades.${this.id}.name`); }, icon: '📚', get desc() { return t(`school.upgrades.${this.id}.desc`); }, baseCost: 400, income: 30, levelBonus: 0.04 },
+  { id: 'computerlab', get name() { return t(`school.upgrades.${this.id}.name`); }, icon: '💻', get desc() { return t(`school.upgrades.${this.id}.desc`); }, baseCost: 700, income: 45, levelBonus: 0.05 },
+  { id: 'playground', get name() { return t(`school.upgrades.${this.id}.name`); }, icon: '🎠', get desc() { return t(`school.upgrades.${this.id}.desc`); }, baseCost: 1000, income: 60, levelBonus: 0.05 },
+  { id: 'cafeteria', get name() { return t(`school.upgrades.${this.id}.name`); }, icon: '🍱', get desc() { return t(`school.upgrades.${this.id}.desc`); }, baseCost: 1600, income: 85, levelBonus: 0.06 },
+  { id: 'artstudio', get name() { return t(`school.upgrades.${this.id}.name`); }, icon: '🎨', get desc() { return t(`school.upgrades.${this.id}.desc`); }, baseCost: 2400, income: 120, levelBonus: 0.06 },
+  { id: 'sportshall', get name() { return t(`school.upgrades.${this.id}.name`); }, icon: '🏀', get desc() { return t(`school.upgrades.${this.id}.desc`); }, baseCost: 3500, income: 170, levelBonus: 0.07 },
 ];
 
 export function upgradeLevel(id) {

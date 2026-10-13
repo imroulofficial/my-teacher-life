@@ -6,6 +6,7 @@ import { sfx } from './audio.js';
 import { AD_UNITS } from './config.js';
 import { showRewardedAdDetailed } from './ads.js';
 import { addCoins } from './economy.js';
+import { t } from '../i18n/index.js';
 
 const usedKey = (level) => `reward_offered_level_${level}`;
 
@@ -35,20 +36,20 @@ export function rewardOfferPanel({ level, coins, coinsEl }) {
   if (!coins || coins <= 0 || alreadyUsed(level)) return null;
 
   let loading = false;
-  const watchBtn = btn('Watch & Double', {
+  const watchBtn = btn(t('reward.watch'), {
     color: 'green',
     size: 'md',
     icon: '▶',
     cls: 'reward-offer-watch',
     onClick: watch,
   });
-  const noBtn = btn('No thanks', { color: 'gray', size: 'sm', cls: 'reward-offer-no', onClick: () => close() });
+  const noBtn = btn(t('reward.no'), { color: 'gray', size: 'sm', cls: 'reward-offer-no', onClick: () => close() });
 
   const panel = h(
     'div',
     { class: 'reward-offer pop-in' },
-    h('div', { class: 'reward-offer-title' }, '🎁 Double Your Reward!'),
-    h('div', { class: 'reward-offer-desc' }, `Watch a short video and get DOUBLE the coins from this level (+${fmt(coins)} 🪙)`),
+    h('div', { class: 'reward-offer-title' }, t('reward.title')),
+    h('div', { class: 'reward-offer-desc' }, t('reward.desc', { coins: fmt(coins) })),
     h('div', { class: 'reward-offer-buttons' }, watchBtn, noBtn),
   );
 
@@ -73,7 +74,7 @@ export function rewardOfferPanel({ level, coins, coinsEl }) {
           if (coinsEl) coinsEl.textContent = `+${fmt(coins * 2)} 🪙`;
           if (coinsEl) coinsEl.classList.add('result-coins-doubled');
           sfx('coin');
-          toast('✓ Bonus received!', 'success');
+          toast(t('reward.received'), 'success');
         },
         { quiet: true },
       );
@@ -87,7 +88,7 @@ export function rewardOfferPanel({ level, coins, coinsEl }) {
       noBtn.disabled = false;
       return;
     }
-    if (!result.earned && result.failed) toast('Ad unavailable, try again later');
+    if (!result.earned && result.failed) toast(t('reward.unavailable'));
     // Watched, closed early or unavailable: the offer is done for this level completion.
     close();
   }

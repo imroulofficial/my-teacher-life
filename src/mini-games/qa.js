@@ -2,22 +2,17 @@
 // A question is on the board, students raise hands with answers.
 // Tap the student with the right answer, then press SESSION to reveal and award a star.
 import { h, btn, shuffle } from '../core/ui.js';
-import { QA_QUESTIONS, STUDENT_NAMES, STUDENT_FACES, SHIRT_COLORS } from './data.js';
+import { qaQuestions, studentNames, STUDENT_FACES, SHIRT_COLORS } from './data.js';
+import { t } from '../i18n/index.js';
 
 export default {
   id: 'qa',
-  howTo: [
-    'Read the question on the chalkboard.',
-    'Students who know an answer raise their hand ✋ and show it in a bubble.',
-    'Tap the student with the CORRECT answer.',
-    'Press SESSION to reveal the answer and give them a ⭐.',
-  ],
 
   start(api) {
     const d = api.difficulty;
     const classSize = 4 + Math.round(2 * d); // 4..6 students
-    const questions = shuffle(QA_QUESTIONS).slice(0, api.rounds);
-    const names = shuffle(STUDENT_NAMES);
+    const questions = shuffle(qaQuestions()).slice(0, api.rounds);
+    const names = shuffle(studentNames());
     const faces = shuffle(STUDENT_FACES);
     const students = Array.from({ length: classSize }, (_, i) => ({
       name: names[i],
@@ -29,7 +24,7 @@ export default {
     const board = h('div', { class: 'chalkboard' });
     const boardQ = h('div', { class: 'chalk-text' });
     const boardA = h('div', { class: 'chalk-answer' });
-    board.append(h('div', { class: 'chalk-label' }, 'QUESTION'), boardQ, boardA);
+    board.append(h('div', { class: 'chalk-label' }, t('qa.label')), boardQ, boardA);
 
     const room = h('div', { class: 'classroom', style: { gridTemplateColumns: `repeat(${classSize > 4 ? 3 : 2}, 1fr)` } });
     const teacher = h('div', { class: 'teacher-avatar' }, '👩‍🏫');
@@ -50,7 +45,7 @@ export default {
       room.appendChild(st.el);
     });
 
-    const sessionBtn = btn('SESSION', { color: 'purple', icon: '⭐', size: 'xl', cls: 'action-btn', disabled: true, onClick: session });
+    const sessionBtn = btn(t('qa.session'), { color: 'purple', icon: '⭐', size: 'xl', cls: 'action-btn', disabled: true, onClick: session });
     api.setControls(sessionBtn);
 
     let round = 0;
@@ -68,7 +63,7 @@ export default {
         api.sfx('tap');
         students[i].el.classList.add('wiggle');
         setTimeout(() => students[i].el.classList.remove('wiggle'), 400);
-        api.toast(`${students[i].name} didn't raise a hand.`);
+        api.toast(t('qa.noHand', { name: students[i].name }));
         return;
       }
       selected = i;
@@ -127,7 +122,7 @@ export default {
       timeoutId = api.after(14 - 5 * d, () => {
         if (locked) return;
         locked = true;
-        api.toast('⏰ Too slow! The class got restless.', 'error');
+        api.toast(t('qa.tooSlow'), 'error');
         api.wrong(null);
         reveal(false);
       });

@@ -3,7 +3,8 @@
 import { h, btn, pick, randInt } from '../core/ui.js';
 import { AD_UNITS } from '../core/config.js';
 import { getState, saveState } from '../core/storage.js';
-import { SPELLING_WORDS, STUDENT_NAMES } from './data.js';
+import { spellingWords, studentNames } from './data.js';
+import { t, currentLang, digits } from '../i18n/index.js';
 
 const VOWELS = 'aeiou';
 const SWAPS = { c: 'k', k: 'c', s: 'z', z: 's', f: 'v', v: 'f', b: 'd', d: 'b', m: 'n', n: 'm', p: 'q', g: 'j' };
@@ -64,14 +65,46 @@ export function misspell(word, difficulty) {
   return capitalize(out);
 }
 
+// Bangla: real-life mix-ups (ি/ী, ু/ূ, স/শ/ষ, ন/ণ, জ/য, র/ড়, aspirated pairs…).
+const BN_SWAPS = {
+  'ি': 'ী', 'ী': 'ি', 'ু': 'ূ', 'ূ': 'ু', 'ে': 'ৈ', 'ৈ': 'ে', 'ো': 'া',
+  'স': 'শ', 'শ': 'ষ', 'ষ': 'স', 'ন': 'ণ', 'ণ': 'ন', 'জ': 'য', 'য': 'জ', 'র': 'ড়', 'ড়': 'র',
+  'ব': 'ভ', 'ভ': 'ব', 'দ': 'ধ', 'ধ': 'দ', 'ত': 'থ', 'থ': 'ত', 'চ': 'ছ', 'ছ': 'চ',
+  'গ': 'ঘ', 'ঘ': 'গ', 'ক': 'খ', 'খ': 'ক', 'প': 'ফ', 'ফ': 'প', 'ট': 'ঠ', 'ঠ': 'ট', 'ম': 'ন',
+};
+const BN_CONSONANT = /[\u0995-\u09B9\u09DC-\u09DF]/;
+
+/** Produces a believable Bangla misspelling. Easy levels change two letters, harder ones one. */
+export function misspellBn(word, difficulty) {
+  const chars = [...word];
+  const swappable = chars.map((c, i) => (BN_SWAPS[c] ? i : -1)).filter((i) => i >= 0);
+  const passes = difficulty < 0.35 && swappable.length > 1 ? 2 : 1;
+  const used = new Set();
+  for (let p = 0; p < passes && used.size < swappable.length; p++) {
+    let i;
+    do i = pick(swappable);
+    while (used.has(i));
+    used.add(i);
+    chars[i] = BN_SWAPS[chars[i]];
+  }
+  let out = chars.join('');
+  if (out === word) {
+    // Nothing swappable: add a vowel sign "া" after the first consonant (e.g. বই → বাই).
+    const i = chars.findIndex((c) => BN_CONSONANT.test(c));
+    out = i >= 0 ? [...chars.slice(0, i + 1), 'া', ...chars.slice(i + 1)].join('') : word + 'া';
+  }
+  return out;
+}
+
 function makePaper(difficulty) {
+  const SPELLING_WORDS = spellingWords();
   const [word, pic] = pick(SPELLING_WORDS);
   const roll = Math.random();
   let shown = word;
   let picture = pic;
   let isCorrect = true;
   if (roll < 0.4) {
-    shown = misspell(word, difficulty);
+    shown = currentLang === 'bn' ? misspellBn(word, difficulty) : misspell(word, difficulty);
     isCorrect = false;
   } else if (roll < 0.52) {
     // Right spelling, wrong picture!
@@ -81,17 +114,11 @@ function makePaper(difficulty) {
     shown = other[0];
     isCorrect = false;
   }
-  return { word, shown, picture, isCorrect, student: pick(STUDENT_NAMES) };
+  return { word, shown, picture, isCorrect, student: pick(studentNames()) };
 }
 
 export default {
   id: 'spelling',
-  howTo: [
-    'Look at the picture and the word the student wrote.',
-    'If the word is spelled correctly AND matches the picture, tap ✔ TICK.',
-    'If anything is wrong, tap ✘ CROSS.',
-    'Press MARK to grade the paper. Be quick before the bell rings!',
-  ],
 
   start(api) {
     const papers = Array.from({ length: api.rounds }, () => makePaper(api.difficulty));
@@ -103,13 +130,13 @@ export default {
     const holder = h('div', { class: 'paper-holder' });
     api.stage.append(h('div', { class: 'desk-scene' }, pile, holder));
 
-    const tickBtn = btn('TICK', { color: 'green', icon: '✔', size: 'lg', cls: 'choice-btn', onClick: () => choose('tick') });
-    const crossBtn = btn('CROSS', { color: 'red', icon: '✘', size: 'lg', cls: 'choice-btn', onClick: () => choose('cross') });
-    const markBtn = btn('MARK', { color: 'orange', icon: '🖍️', size: 'xl', cls: 'action-btn', disabled: true, onClick: mark });
+    const tickBtn = btn(t('spelling.tick'), { color: 'green', icon: '✔', size: 'lg', cls: 'choice-btn', onClick: () => choose('tick') });
+    const crossBtn = btn(t('spelling.cross'), { color: 'red', icon: '✘', size: 'lg', cls: 'choice-btn', onClick: () => choose('cross') });
+    const markBtn = btn(t('spelling.mark'), { color: 'orange', icon: '🖍️', size: 'xl', cls: 'action-btn', disabled: true, onClick: mark });
     api.setControls(h('div', { class: 'controls-row' }, tickBtn, crossBtn), markBtn);
 
     api.addPower({
-      label: 'Auto-Grade All',
+      label: t('spelling.autoGrade'),
       icon: '📺',
       adUnit: AD_UNITS.AUTO_GRADE,
       onReward: autoGradeAll,
@@ -130,7 +157,7 @@ export default {
         }
       }
       idx = papers.length;
-      api.toast('🔔 The bell rang!', 'error');
+      api.toast(t('spelling.bell'), 'error');
       api.after(0.8, () => api.finish());
     });
 
@@ -150,14 +177,14 @@ export default {
       tickBtn.classList.remove('selected');
       crossBtn.classList.remove('selected');
       markBtn.disabled = true;
-      pile.textContent = `📄 x${papers.length - idx}`;
+      pile.textContent = `📄 x${digits(papers.length - idx)}`;
       paperEl = h(
         'div',
         { class: 'paper paper-enter' },
-        h('div', { class: 'paper-header' }, h('span', {}, 'Spelling Test'), h('span', { class: 'font-hand' }, `Name: ${p.student}`)),
-        h('div', { class: 'paper-question' }, `Q${idx + 1}. Write the name of this picture:`),
+        h('div', { class: 'paper-header' }, h('span', {}, t('spelling.title')), h('span', { class: 'font-hand' }, t('spelling.name', { name: p.student }))),
+        h('div', { class: 'paper-question' }, t('spelling.question', { n: idx + 1 })),
         h('div', { class: 'picture-frame' }, p.picture),
-        h('div', { class: 'answer-line' }, h('span', { class: 'opacity-60 text-base mr-2' }, 'Answer:'), h('span', { class: 'handwriting' }, p.shown)),
+        h('div', { class: 'answer-line' }, h('span', { class: 'opacity-60 text-base mr-2' }, t('spelling.answer')), h('span', { class: 'handwriting' }, p.shown)),
         h('div', { class: 'stamp-slot' }),
       );
       holder.replaceChildren(paperEl);
@@ -183,7 +210,7 @@ export default {
       if (right) api.correct(paperEl);
       else {
         api.wrong(paperEl);
-        paperEl.appendChild(h('div', { class: 'correction' }, p.isCorrect ? 'It was correct!' : `Correct: ${p.word}`));
+        paperEl.appendChild(h('div', { class: 'correction' }, p.isCorrect ? t('spelling.wasCorrect') : t('spelling.correctIs', { word: p.word })));
       }
       api.after(right ? 0.7 : 1.4, nextPaper);
     }
@@ -208,7 +235,7 @@ export default {
     function autoGradeAll() {
       auto = true;
       api.clearTimer();
-      api.toast('🤖 Auto-Grade: grading every paper perfectly!', 'success');
+      api.toast(t('spelling.autoGradeToast'), 'success');
       if (!locked) runAuto(); // otherwise nextPaper() continues the chain
     }
 

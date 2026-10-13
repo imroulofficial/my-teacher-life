@@ -3,6 +3,7 @@ import { h, fmt } from '../core/ui.js';
 import { getState } from '../core/storage.js';
 import { isBoostActive, boostRemainingMs } from '../core/economy.js';
 import { sfx } from '../core/audio.js';
+import { t } from '../i18n/index.js';
 
 export function topBar({ title, onBack } = {}) {
   const coinText = h('span', {}, fmt(getState().coins));
@@ -31,7 +32,7 @@ export function topBar({ title, onBack } = {}) {
     coinText.textContent = fmt(getState().coins);
     const on = isBoostActive();
     boost.classList.toggle('hidden', !on);
-    if (on) boost.textContent = `✨x2 ${Math.ceil(boostRemainingMs() / 60000)}m`;
+    if (on) boost.textContent = `✨x2 ${t('common.minutesShort', { m: Math.ceil(boostRemainingMs() / 60000) })}`;
   };
   update();
   window.addEventListener('mtl:coins', update);

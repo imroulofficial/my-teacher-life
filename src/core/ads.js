@@ -4,6 +4,7 @@ import { AdMob, RewardAdPluginEvents, AdmobConsentStatus } from '@capacitor-comm
 import { ADS_TESTING, ADS_TEST_DEVICES } from './config.js';
 import { adLoadingOverlay, toast, modal, h } from './ui.js';
 import { getState, saveState } from './storage.js';
+import { t, digits } from '../i18n/index.js';
 
 const isNative = () => Capacitor.isNativePlatform();
 
@@ -89,22 +90,22 @@ export async function privacyOptionsAvailable() {
 /** Lets the player review/change their ad privacy choices from Settings. Never shows raw errors. */
 export async function showPrivacyOptions() {
   if (!isNative()) {
-    toast('Ad privacy choices are available in the Android app.');
+    toast(t('ads.privacyAndroidOnly'));
     return;
   }
   await initAds();
   const info = await refreshConsentInfo();
   if (!info) {
-    toast('Ad privacy choices are not available right now. Please check your internet connection and try again later.');
+    toast(t('ads.privacyOffline'));
     return;
   }
   if (info.status === AdmobConsentStatus.NOT_REQUIRED || !info.isConsentFormAvailable) {
-    toast('No ad privacy choices are needed in your region.');
+    toast(t('ads.privacyNotNeeded'));
     return;
   }
   const shown = await showConsentFormSafe();
-  if (shown) toast('Your ad privacy choices are saved.', 'success');
-  else toast('Ad privacy choices are not available right now. Please try again later.');
+  if (shown) toast(t('ads.privacySaved'), 'success');
+  else toast(t('ads.privacyLater'));
 }
 
 function emit(name) {
@@ -142,7 +143,7 @@ export async function showRewardedAdDetailed(adUnitId, onRewardEarned, { quiet =
   try {
     if (typeof navigator !== 'undefined' && navigator.onLine === false) {
       failed = true; // no point waiting for a request that cannot succeed
-      if (!quiet) toast('No video available right now. Check your internet connection.', 'error', 2600);
+      if (!quiet) toast(t('ads.noVideo'), 'error', 2600);
     } else if (isNative()) {
       ({ earned, failed, reward } = await showNative(adUnitId, quiet));
     } else {
@@ -198,20 +199,20 @@ async function showNative(adUnitId, quiet = false) {
       });
       await add(RewardAdPluginEvents.Dismissed, () => settle(400));
       await add(RewardAdPluginEvents.FailedToShow, () => {
-        fail('The video could not play. Please try again.');
+        fail(t('ads.couldNotPlay'));
         settle();
       });
 
       adLoadingOverlay(true);
       const loadTimeout = setTimeout(() => {
-        fail('No video available right now. Check your internet connection.');
+        fail(t('ads.noVideo'));
         settle();
       }, 15000);
       try {
         await AdMob.prepareRewardVideoAd({ adId: adUnitId, isTesting: ADS_TESTING });
       } catch (e) {
         clearTimeout(loadTimeout);
-        fail('No video available right now. Check your internet connection.');
+        fail(t('ads.noVideo'));
         settle();
         return;
       }
@@ -246,20 +247,20 @@ function showWebSimulation(adUnitId) {
   return new Promise((resolve) => {
     let seconds = 3;
     let done = false;
-    const counter = h('div', { class: 'text-5xl font-bold text-center my-4' }, String(seconds));
+    const counter = h('div', { class: 'text-5xl font-bold text-center my-4' }, digits(seconds));
     const m = modal({
-      title: '📺 Reward Video (preview)',
+      title: t('ads.previewTitle'),
       dismissable: false,
       body: h(
         'div',
         { class: 'text-center' },
-        h('p', { class: 'opacity-80' }, 'Real ads only play inside the Android app.'),
+        h('p', { class: 'opacity-80' }, t('ads.previewNote')),
         counter,
         h('p', { class: 'text-xs opacity-60 break-all' }, adUnitId),
       ),
       buttons: [
         {
-          label: 'Skip (no reward)',
+          label: t('ads.skip'),
           color: 'gray',
           onClick: () => {
             done = true;
@@ -271,7 +272,7 @@ function showWebSimulation(adUnitId) {
     });
     const iv = setInterval(() => {
       seconds--;
-      counter.textContent = String(Math.max(seconds, 0));
+      counter.textContent = digits(Math.max(seconds, 0));
       if (seconds <= 0 && !done) {
         done = true;
         clearInterval(iv);

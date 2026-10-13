@@ -1,20 +1,21 @@
 // Chapters, level table and difficulty curve.
 import { MAX_STORY_LEVEL } from './config.js';
+import { t } from '../i18n/index.js';
 
 export const GAME_INFO = {
-  spelling: { name: 'Spelling & Picture Check', icon: '📝', color: '#ff6b6b' },
-  qa: { name: 'Classroom Q&A', icon: '🙋', color: '#4d96ff' },
-  match: { name: 'Line Match Assessment', icon: '🔗', color: '#3bceac' },
-  stamp: { name: 'Test Result Reaction', icon: '💯', color: '#9b5de5' },
-  cheating: { name: 'Anti-Cheating Radar', icon: '📡', color: '#ff9f1c' },
-  security: { name: 'Morning Security Scan', icon: '🚨', color: '#f15bb5' },
-  library: { name: 'Library Book Sorting', icon: '📚', color: '#00bbf9' },
+  spelling: { get name() { return t('games.spelling'); }, icon: '📝', color: '#ff6b6b' },
+  qa: { get name() { return t('games.qa'); }, icon: '🙋', color: '#4d96ff' },
+  match: { get name() { return t('games.match'); }, icon: '🔗', color: '#3bceac' },
+  stamp: { get name() { return t('games.stamp'); }, icon: '💯', color: '#9b5de5' },
+  cheating: { get name() { return t('games.cheating'); }, icon: '📡', color: '#ff9f1c' },
+  security: { get name() { return t('games.security'); }, icon: '🚨', color: '#f15bb5' },
+  library: { get name() { return t('games.library'); }, icon: '📚', color: '#00bbf9' },
 };
 
 export const CHAPTERS = [
   {
     id: 1,
-    name: 'First Day of School',
+    get name() { return t(`chapters.${this.id}`); },
     icon: '🍎',
     bg: 'linear-gradient(160deg,#ffd166,#ff9f1c)',
     from: 1,
@@ -24,7 +25,7 @@ export const CHAPTERS = [
   },
   {
     id: 2,
-    name: 'Exam Season',
+    get name() { return t(`chapters.${this.id}`); },
     icon: '📝',
     bg: 'linear-gradient(160deg,#a0c4ff,#4d96ff)',
     from: 11,
@@ -34,7 +35,7 @@ export const CHAPTERS = [
   },
   {
     id: 3,
-    name: 'Safety Week',
+    get name() { return t(`chapters.${this.id}`); },
     icon: '🚨',
     bg: 'linear-gradient(160deg,#ffadad,#f15bb5)',
     from: 21,
@@ -44,7 +45,7 @@ export const CHAPTERS = [
   },
   {
     id: 4,
-    name: 'Library Week',
+    get name() { return t(`chapters.${this.id}`); },
     icon: '📚',
     bg: 'linear-gradient(160deg,#9bf6ff,#00bbf9)',
     from: 31,
@@ -54,7 +55,7 @@ export const CHAPTERS = [
   },
   {
     id: 5,
-    name: "Principal's Challenge",
+    get name() { return t(`chapters.${this.id}`); },
     icon: '🏆',
     bg: 'linear-gradient(160deg,#caffbf,#3bceac)',
     from: 41,
@@ -101,5 +102,5 @@ export function baseCoinsFor(level) {
 }
 
 export function levelLabel(level) {
-  return level > MAX_STORY_LEVEL ? `Level ${level} ★` : `Level ${level}`;
+  return t(level > MAX_STORY_LEVEL ? 'level.labelEndless' : 'level.label', { n: level });
 }

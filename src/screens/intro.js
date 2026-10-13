@@ -3,8 +3,8 @@ import { h, btn } from '../core/ui.js';
 import { getState, saveState } from '../core/storage.js';
 import { go } from '../core/router.js';
 import { GAME_INFO, gameForLevel, chapterOf, levelLabel, roundsFor } from '../core/levels.js';
-import { GAMES } from '../mini-games/index.js';
 import { topBar } from './common.js';
+import { t } from '../i18n/index.js';
 
 export default {
   render(root, { level }) {
@@ -20,18 +20,18 @@ export default {
     const card = h(
       'div',
       { class: 'intro-card pop-in', style: { '--accent': info.color } },
-      ch ? h('div', { class: 'intro-chapter' }, `${ch.icon} Chapter ${ch.id}: ${ch.name}`) : h('div', { class: 'intro-chapter' }, '🌟 Teacher of the Year'),
+      ch ? h('div', { class: 'intro-chapter' }, t('level.chapterLine', { icon: ch.icon, n: ch.id, name: ch.name })) : h('div', { class: 'intro-chapter' }, `🌟 ${t('level.endlessTitle')}`),
       h('div', { class: 'intro-icon bob' }, info.icon),
       h('div', { class: 'intro-title' }, info.name),
-      isNew ? h('div', { class: 'new-badge' }, 'NEW LESSON!') : null,
-      h('div', { class: 'intro-meta' }, `📋 ${roundsFor(level, gameId)} tasks  ·  Best: ${'★'.repeat(best)}${'☆'.repeat(3 - best)}`),
-      h('div', { class: 'howto-title' }, 'How to play'),
+      isNew ? h('div', { class: 'new-badge' }, t('level.newLesson')) : null,
+      h('div', { class: 'intro-meta' }, t('level.meta', { n: roundsFor(level, gameId), stars: '★'.repeat(best) + '☆'.repeat(3 - best) })),
+      h('div', { class: 'howto-title' }, t('level.howToTitle')),
       h(
         'ol',
         { class: 'howto' },
-        GAMES[gameId].howTo.map((t) => h('li', {}, t)),
+        t(`howTo.${gameId}`).map((line) => h('li', {}, line)),
       ),
-      btn('START', {
+      btn(t('level.start'), {
         color: 'green',
         size: 'xxl',
         icon: '▶',

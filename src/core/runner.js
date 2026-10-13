@@ -7,6 +7,7 @@ import { GAME_INFO, gameForLevel, difficultyFor, roundsFor, baseCoinsFor, levelL
 import { addCoins, levelCoinMultiplier, isBoostActive, boostRemainingMs } from './economy.js';
 import { GAMES } from '../mini-games/index.js';
 import { rewardOfferPanel } from './reward-offer.js';
+import { t, digits } from '../i18n/index.js';
 import { go } from './router.js';
 
 export function starsFor(acc) {
@@ -115,8 +116,8 @@ export function runLevel(root, level) {
 
   function updateHud() {
     progressFill.style.width = Math.min(100, (done / rounds) * 100) + '%';
-    progressText.textContent = `${Math.min(done, rounds)} / ${rounds}`;
-    scoreEl.textContent = `✔ ${correct}`;
+    progressText.textContent = digits(`${Math.min(done, rounds)} / ${rounds}`);
+    scoreEl.textContent = `✔ ${digits(correct)}`;
     boostEl.classList.toggle('hidden', !isBoostActive());
   }
   const boostIv = setInterval(updateHud, 1000);
@@ -174,7 +175,7 @@ export function runLevel(root, level) {
     },
     bonus(coins, el) {
       bonusCoins += coins;
-      if (el) floatAtEl(el, `+${coins} 🪙`, '#ffd23f');
+      if (el) floatAtEl(el, `+${digits(coins)} 🪙`, '#ffd23f');
       sfx('coin');
     },
     after(seconds, fn) {
@@ -286,14 +287,14 @@ export function runLevel(root, level) {
     if (ended || pauseModal) return;
     setPaused(true);
     pauseModal = modal({
-      title: '⏸ Paused',
+      title: t('game.paused'),
       dismissable: false,
       body: h('p', { class: 'text-center text-lg' }, `${info.icon} ${info.name}`),
       buttons: [
-        { label: 'Quit', color: 'red', onClick: () => ((pauseModal = null), go('map', { level })) },
-        { label: 'Restart', color: 'blue', onClick: () => ((pauseModal = null), go('game', { level })) },
+        { label: t('game.quit'), color: 'red', onClick: () => ((pauseModal = null), go('map', { level })) },
+        { label: t('game.restart'), color: 'blue', onClick: () => ((pauseModal = null), go('game', { level })) },
         {
-          label: 'Resume',
+          label: t('game.resume'),
           color: 'green',
           onClick: () => {
             pauseModal = null;
@@ -344,17 +345,17 @@ export function runLevel(root, level) {
       'div',
       { class: 'text-center' },
       starRow,
-      h('div', { class: 'text-2xl font-bold mt-2' }, passed ? ['Great teaching!', 'Well done!', 'Superb!', 'Perfect class!'][stars] : 'Class dismissed… try again!'),
-      h('div', { class: 'mt-1 opacity-80' }, `Accuracy ${Math.round(acc * 100)}%  ·  ✔ ${correct}  ✘ ${wrong}`),
+      h('div', { class: 'text-2xl font-bold mt-2' }, passed ? t('game.praise')[stars] : t('game.failText')),
+      h('div', { class: 'mt-1 opacity-80' }, t('game.accuracy', { pct: Math.round(acc * 100), ok: correct, bad: wrong })),
       coinsEl,
-      isBoostActive() ? h('div', { class: 'text-sm text-amber-600 font-bold' }, `✨ Golden boost x2 active (${Math.ceil(boostRemainingMs() / 60000)} min left)`) : null,
-      chapterDone ? h('div', { class: 'chapter-done' }, `🏆 Chapter "${chapterOf(level).name}" complete!`) : null,
-      unlockedNew && level + 1 === 51 ? h('div', { class: 'chapter-done' }, '🌟 Endless "Teacher of the Year" levels unlocked!') : null,
+      isBoostActive() ? h('div', { class: 'text-sm text-amber-600 font-bold' }, t('game.boostActive', { m: Math.ceil(boostRemainingMs() / 60000) })) : null,
+      chapterDone ? h('div', { class: 'chapter-done' }, t('game.chapterDone', { name: chapterOf(level).name })) : null,
+      unlockedNew && level + 1 === 51 ? h('div', { class: 'chapter-done' }, t('game.endlessUnlocked')) : null,
     );
-    const buttons = [{ label: 'Map', color: 'gray', icon: '🗺️', onClick: () => go('map', { level }) }];
-    buttons.push({ label: 'Retry', color: 'blue', icon: '↻', onClick: () => go('game', { level }) });
-    if (passed) buttons.push({ label: 'Next', color: 'green', icon: '▶', onClick: () => go('intro', { level: level + 1 }) });
-    const resultModal = modal({ title: passed ? `${levelLabel(level)} Complete!` : 'Level Failed', body, buttons, dismissable: false, cls: 'result-card' });
+    const buttons = [{ label: t('game.map'), color: 'gray', icon: '🗺️', onClick: () => go('map', { level }) }];
+    buttons.push({ label: t('game.retry'), color: 'blue', icon: '↻', onClick: () => go('game', { level }) });
+    if (passed) buttons.push({ label: t('game.next'), color: 'green', icon: '▶', onClick: () => go('intro', { level: level + 1 }) });
+    const resultModal = modal({ title: passed ? t('game.complete', { level: levelLabel(level) }) : t('game.failed'), body, buttons, dismissable: false, cls: 'result-card' });
     // Opt-in rewarded video offer, below the level buttons (wins only; buttons stay usable).
     const offer = passed ? rewardOfferPanel({ level, coins, coinsEl }) : null;
     if (offer) resultModal.el.querySelector('.modal-card').appendChild(offer);
@@ -366,7 +367,7 @@ export function runLevel(root, level) {
     instance = game.start(api);
   } catch (e) {
     console.error('Game failed to start', e);
-    toast('Oops, this lesson could not start.', 'error');
+    toast(t('game.couldNotStart'), 'error');
   }
   updateHud();
 

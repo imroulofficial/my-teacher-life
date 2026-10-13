@@ -4,22 +4,17 @@
 import { h, btn, shuffle } from '../core/ui.js';
 import { AD_UNITS } from '../core/config.js';
 import { getState, saveState } from '../core/storage.js';
-import { LIBRARY_SUBJECTS } from './data.js';
+import { librarySubjects } from './data.js';
+import { t } from '../i18n/index.js';
 
 const RUSH_THRESHOLD = 10; // "too many books" -> offer Library Rush
 
 export default {
   id: 'library',
-  howTo: [
-    'Drag each book from the cart onto the shelf for its subject.',
-    '(You can also tap a book, then tap a shelf.)',
-    'Press PLACE to check the shelves. Wrong books slide back to the cart.',
-    'Too many books? Try 📚 Library Rush!',
-  ],
 
   start(api) {
     const d = api.difficulty;
-    const subjects = LIBRARY_SUBJECTS.slice(0, d < 0.25 ? 3 : d < 0.6 ? 4 : 5);
+    const subjects = librarySubjects().slice(0, d < 0.25 ? 3 : d < 0.6 ? 4 : 5);
     const showColor = d < 0.35;
     const showIcon = d < 0.7;
 
@@ -47,11 +42,11 @@ export default {
       return { subject: s, el, slot };
     });
 
-    const placeBtn = btn('PLACE', { color: 'blue', icon: '📥', size: 'xl', cls: 'action-btn', disabled: true, onClick: place });
+    const placeBtn = btn(t('library.place'), { color: 'blue', icon: '📥', size: 'xl', cls: 'action-btn', disabled: true, onClick: place });
     api.setControls(placeBtn);
 
     const rush = api.addPower({
-      label: 'Library Rush',
+      label: t('library.rush'),
       icon: '📚',
       adUnit: AD_UNITS.LIBRARY_RUSH,
       onReward: libraryRush,
@@ -82,7 +77,7 @@ export default {
       const inCart = books.filter((b) => b.state === 'cart').length;
       const pending = books.filter((b) => b.state === 'pending').length;
       const remaining = books.filter((b) => b.state !== 'done').length;
-      counter.textContent = inCart ? `🛒 Cart: ${inCart} book${inCart > 1 ? 's' : ''}` : pending ? '👉 Press PLACE!' : '';
+      counter.textContent = inCart ? t(inCart > 1 ? 'library.cartMany' : 'library.cartOne', { n: inCart }) : pending ? t('library.pressPlace') : '';
       placeBtn.disabled = pending === 0 || busy;
       placeBtn.classList.toggle('pulse', inCart === 0 && pending > 0);
       if (remaining >= RUSH_THRESHOLD && !rush.used) rush.show();
@@ -227,7 +222,7 @@ export default {
       busy = true;
       selectedBook = null;
       rush.hide();
-      api.toast('📚 Library Rush! Sorting the whole library…', 'success');
+      api.toast(t('library.rushToast'), 'success');
       const todo = books.filter((b) => b.state !== 'done');
       todo.forEach((b, k) => {
         api.after(k * 0.12, () => {

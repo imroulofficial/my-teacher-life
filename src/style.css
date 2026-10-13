@@ -34,7 +34,7 @@ body {
   user-select: none;
   color: var(--ink);
   background: linear-gradient(180deg, #7dd3fc 0%, #bae6fd 45%, #fde68a 100%);
-  font-family: 'Fredoka', system-ui, sans-serif;
+  font-family: 'Fredoka', 'Baloo Da 2', system-ui, sans-serif;
 }
 
 input {
@@ -73,7 +73,7 @@ input {
 
 .font-hand,
 .handwriting {
-  font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+  font-family: 'Patrick Hand', 'Galada', 'Comic Sans MS', cursive;
 }
 
 /* ---------------------------------------------------------------- splash */
@@ -1016,13 +1016,13 @@ input {
   box-shadow:
     0 6px 0 #713f12,
     0 10px 18px rgba(0, 0, 0, 0.25);
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Patrick Hand', 'Galada', cursive;
 }
 .chalk-label {
   font-size: 12px;
   letter-spacing: 2px;
   opacity: 0.6;
-  font-family: 'Fredoka', sans-serif;
+  font-family: 'Fredoka', 'Baloo Da 2', sans-serif;
 }
 .chalk-text {
   font-size: 24px;
@@ -1316,7 +1316,7 @@ input {
 .mark-cell {
   font-size: 20px;
   font-weight: 700;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Patrick Hand', 'Galada', cursive;
 }
 .mark-cell.ok {
   color: #16a34a;
@@ -1331,7 +1331,7 @@ input {
 }
 .score-line {
   margin-top: 8px;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Patrick Hand', 'Galada', cursive;
   font-size: 24px;
   color: #1e3a8a;
 }
@@ -2328,3 +2328,35 @@ input {
   .reward-offer-buttons { margin-top: 6px; gap: 8px; }
   .reward-offer-buttons .btn3d { font-size: 15px; padding: 8px 14px; }
 }
+
+/* ---------------------------------------------------------------- Bangla / English
+   Latin text uses Fredoka; Bangla letters fall back to Baloo Da 2 (rounded, chunky — same feel),
+   handwriting falls back to Galada. Both fonts are bundled, so Bangla works offline. */
+.lang-bn body { letter-spacing: 0; }
+.lang-bn .handwriting { font-size: 38px; }
+.lang-bn .btn3d { letter-spacing: 0; }
+.lang-bn .howto { line-height: 1.55; }
+.logo-bn {
+  margin-top: 2px;
+  font-size: clamp(16px, 3vh, 26px);
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 3px 0 #c2410c;
+}
+.lang-picker .modal-title { font-size: 24px; }
+.lang-picker-icon { font-size: 64px; line-height: 1; margin: 4px 0 8px; }
+.lang-picker-line { font-size: 18px; font-weight: 600; color: #475569; margin: 2px 0; }
+.lang-picker-buttons { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
+.lang-picker-buttons .lang-choice { width: 100%; font-size: 26px; }
+.lang-switch { display: flex; gap: 6px; padding: 4px; border-radius: 999px; background: #f1f5f9; }
+.lang-switch-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  color: #475569;
+  background: transparent;
+}
+.lang-switch-btn.on { background: linear-gradient(180deg, #4ade80, #16a34a); color: #fff; box-shadow: 0 3px 0 #166534; }

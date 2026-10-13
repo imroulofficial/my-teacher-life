@@ -3,7 +3,8 @@
 // Tap the cheater, then press CAUGHT before they stop.
 import { h, btn, pick, shuffle, rand } from '../core/ui.js';
 import { getState, saveState } from '../core/storage.js';
-import { STUDENT_NAMES, STUDENT_FACES, SHIRT_COLORS } from './data.js';
+import { studentNames, STUDENT_FACES, SHIRT_COLORS } from './data.js';
+import { t } from '../i18n/index.js';
 
 const DISTRACTIONS = [
   { face: '🥱', label: 'yawn' },
@@ -14,25 +15,19 @@ const DISTRACTIONS = [
 
 export default {
   id: 'cheating',
-  howTo: [
-    'Watch the exam hall carefully.',
-    'When someone peeks 👀 at a neighbour\'s paper, the radar circle lights up near them.',
-    'Tap the cheating student, then press CAUGHT!',
-    'Don\'t accuse innocent students — yawning is not cheating!',
-  ],
 
   start(api) {
     const d = api.difficulty;
     const cols = 3;
     const rows = d < 0.3 ? 2 : d < 0.7 ? 3 : 4;
     const count = cols * rows;
-    const names = shuffle(STUDENT_NAMES);
+    const names = shuffle(studentNames());
     const faces = shuffle(STUDENT_FACES);
 
     const hall = h('div', { class: 'exam-hall', style: { gridTemplateColumns: `repeat(${cols}, 1fr)` } });
     const canvas = h('canvas', { class: 'radar-canvas' });
     const hallWrap = h('div', { class: 'exam-wrap' }, hall, canvas);
-    const status = h('div', { class: 'exam-status' }, '🤫 Exam in progress… stay alert!');
+    const status = h('div', { class: 'exam-status' }, t('cheating.calm'));
     api.stage.append(h('div', { class: 'exam-scene' }, status, hallWrap));
 
     const students = Array.from({ length: count }, (_, i) => {
@@ -58,7 +53,7 @@ export default {
       return s;
     });
 
-    const caughtBtn = btn('CAUGHT!', { color: 'red', icon: '🚨', size: 'xl', cls: 'action-btn', disabled: true, onClick: caught });
+    const caughtBtn = btn(t('cheating.caught'), { color: 'red', icon: '🚨', size: 'xl', cls: 'action-btn', disabled: true, onClick: caught });
     api.setControls(caughtBtn);
 
     let selected = -1;
@@ -93,7 +88,7 @@ export default {
     function scheduleRound() {
       if (!api.alive) return;
       resolving = false;
-      status.textContent = '🤫 Exam in progress… stay alert!';
+      status.textContent = t('cheating.calm');
       status.className = 'exam-status';
       const wait = rand(1.2, 3.2 - d);
       // Innocent distractions on harder levels.
@@ -137,7 +132,7 @@ export default {
       s.eyesEl.classList.remove('hidden');
       s.eyesEl.textContent = dir === 'left' ? '👀⬅' : '➡👀';
       api.sfx('beep');
-      status.textContent = '📡 Radar alert! Someone is peeking!';
+      status.textContent = t('cheating.alert');
       status.className = 'exam-status alert';
       // Radar circle: exact on easy levels, wider & offset on hard levels.
       const rect = s.el.getBoundingClientRect();
@@ -155,7 +150,7 @@ export default {
         if (resolving) return;
         resolving = true;
         endCheat();
-        status.textContent = `💨 ${s.name} got away with it!`;
+        status.textContent = t('cheating.gotAway', { name: s.name });
         status.className = 'exam-status bad';
         api.wrong(s.el);
         finishRound();
@@ -180,8 +175,8 @@ export default {
         const s = target;
         endCheat();
         s.faceEl.textContent = '😱';
-        s.el.appendChild(h('div', { class: 'caught-stamp' }, 'CAUGHT!'));
-        status.textContent = `🚨 Caught ${s.name} red-handed!`;
+        s.el.appendChild(h('div', { class: 'caught-stamp' }, t('cheating.stamp')));
+        status.textContent = t('cheating.caughtName', { name: s.name });
         status.className = 'exam-status good';
         const st = getState();
         st.stats.cheatersCaught++;
@@ -196,7 +191,7 @@ export default {
         // False accusation!
         resolving = true;
         target.faceEl.textContent = '😢';
-        status.textContent = `😢 ${target.name} was innocent!`;
+        status.textContent = t('cheating.innocent', { name: target.name });
         status.className = 'exam-status bad';
         api.wrong(target.el);
         if (cheater) {

@@ -1,18 +1,19 @@
 // Unique Golden Stamp designs ("flourishes") unlocked with the Golden Stamp reward.
 import { getState, saveState } from './storage.js';
+import { t } from '../i18n/index.js';
 
 export const STAMP_DESIGNS = [
-  { id: 'classic', name: 'Classic Red Pen', icon: '🖍️', color: '#e11d48', free: true },
-  { id: 'crown', name: 'Royal Crown', icon: '👑', color: '#d97706' },
-  { id: 'rainbow', name: 'Rainbow Splash', icon: '🌈', color: '#7c3aed' },
-  { id: 'rocket', name: 'Rocket Launch', icon: '🚀', color: '#2563eb' },
-  { id: 'dragon', name: 'Fire Dragon', icon: '🐉', color: '#16a34a' },
-  { id: 'unicorn', name: 'Magic Unicorn', icon: '🦄', color: '#db2777' },
-  { id: 'star', name: 'Superstar', icon: '🌟', color: '#ca8a04' },
-  { id: 'heart', name: 'Big Heart', icon: '💖', color: '#e11d48' },
-  { id: 'trophy', name: 'Champion Cup', icon: '🏆', color: '#b45309' },
-  { id: 'diamond', name: 'Diamond Mind', icon: '💎', color: '#0891b2' },
-  { id: 'lightning', name: 'Lightning Brain', icon: '⚡', color: '#ca8a04' },
+  { id: 'classic', get name() { return t(`collection.designs.${this.id}`); }, icon: '🖍️', color: '#e11d48', free: true },
+  { id: 'crown', get name() { return t(`collection.designs.${this.id}`); }, icon: '👑', color: '#d97706' },
+  { id: 'rainbow', get name() { return t(`collection.designs.${this.id}`); }, icon: '🌈', color: '#7c3aed' },
+  { id: 'rocket', get name() { return t(`collection.designs.${this.id}`); }, icon: '🚀', color: '#2563eb' },
+  { id: 'dragon', get name() { return t(`collection.designs.${this.id}`); }, icon: '🐉', color: '#16a34a' },
+  { id: 'unicorn', get name() { return t(`collection.designs.${this.id}`); }, icon: '🦄', color: '#db2777' },
+  { id: 'star', get name() { return t(`collection.designs.${this.id}`); }, icon: '🌟', color: '#ca8a04' },
+  { id: 'heart', get name() { return t(`collection.designs.${this.id}`); }, icon: '💖', color: '#e11d48' },
+  { id: 'trophy', get name() { return t(`collection.designs.${this.id}`); }, icon: '🏆', color: '#b45309' },
+  { id: 'diamond', get name() { return t(`collection.designs.${this.id}`); }, icon: '💎', color: '#0891b2' },
+  { id: 'lightning', get name() { return t(`collection.designs.${this.id}`); }, icon: '⚡', color: '#ca8a04' },
 ];
 
 export function isUnlocked(id) {

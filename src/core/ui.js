@@ -1,5 +1,6 @@
 // Shared DOM helpers: element builder, modals, toasts, confetti, coin HUD.
 import { sfx } from './audio.js';
+import { t, digits } from '../i18n/index.js';
 
 /**
  * Tiny element builder.
@@ -27,18 +28,20 @@ export const $ = (sel, root = document) => root.querySelector(sel);
 
 export function fmt(n) {
   n = Math.floor(n);
-  if (n >= 1e9) return (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
-  if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
-  if (n >= 1e4) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
-  return n.toLocaleString('en-US');
+  let out;
+  if (n >= 1e9) out = (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+  else if (n >= 1e6) out = (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+  else if (n >= 1e4) out = (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+  else out = n.toLocaleString('en-US');
+  return digits(out); // Bangla digits in Bangla
 }
 
 export function fmtDuration(ms) {
   const totalMin = Math.floor(ms / 60000);
   const hrs = Math.floor(totalMin / 60);
   const min = totalMin % 60;
-  if (hrs > 0) return `${hrs}h ${min}m`;
-  return `${Math.max(1, min)}m`;
+  if (hrs > 0) return t('common.durationHM', { h: hrs, m: min });
+  return t('common.durationM', { m: Math.max(1, min) });
 }
 
 export const rand = (a, b) => a + Math.random() * (b - a);
@@ -129,14 +132,14 @@ export function closeTopModal() {
   return !!top; // a non-dismissable modal swallows the back button
 }
 
-export function confirmModal(title, text, okLabel = 'OK', okColor = 'red') {
+export function confirmModal(title, text, okLabel = t('common.ok'), okColor = 'red') {
   return new Promise((resolve) => {
     let answered = false;
     const m = modal({
       title,
       body: h('p', { class: 'text-center text-lg' }, text),
       buttons: [
-        { label: 'Cancel', color: 'gray', onClick: () => ((answered = true), resolve(false)) },
+        { label: t('common.cancel'), color: 'gray', onClick: () => ((answered = true), resolve(false)) },
         { label: okLabel, color: okColor, onClick: () => ((answered = true), resolve(true)) },
       ],
     });
@@ -218,7 +221,7 @@ export function adLoadingOverlay(show) {
         'div',
         { id: 'ad-loading', class: 'ad-loading' },
         h('div', { class: 'ad-spinner' }),
-        h('div', { class: 'mt-3 text-white text-xl font-bold' }, 'Loading reward video…'),
+        h('div', { class: 'mt-3 text-white text-xl font-bold' }, t('ads.loading')),
       );
       document.body.appendChild(o);
     }

@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        game: ['"Fredoka"', 'system-ui', 'sans-serif'],
-        hand: ['"Patrick Hand"', 'cursive'],
+        game: ['"Fredoka"', '"Baloo Da 2"', 'system-ui', 'sans-serif'],
+        hand: ['"Patrick Hand"', '"Galada"', 'cursive'],
       },
       colors: {
         redpen: '#ef3b4d',

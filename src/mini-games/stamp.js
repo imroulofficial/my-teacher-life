@@ -6,18 +6,11 @@ import { AD_UNITS, BOOSTS } from '../core/config.js';
 import { getState, saveState } from '../core/storage.js';
 import { activateCoinBoost } from '../core/economy.js';
 import { activeDesign, unlockRandomDesign } from '../core/stamps.js';
-import { STUDENT_NAMES, STUDENT_FACES } from './data.js';
-
-const SUBJECTS = ['Math', 'English', 'Science', 'History', 'Geography', 'Art', 'Music'];
+import { studentNames, testSubjects, STUDENT_FACES } from './data.js';
+import { t, digits } from '../i18n/index.js';
 
 export default {
   id: 'stamp',
-  howTo: [
-    'Each paper shows the student\'s marks: ✔ right, ✘ wrong.',
-    'Compare the score with the PASS MARK at the top.',
-    'Stamp A+ if they passed, F if they failed.',
-    'Watch the reaction! Try the ✨ Golden Stamp for a special design and bonus coins.',
-  ],
 
   start(api) {
     const d = api.difficulty;
@@ -25,7 +18,7 @@ export default {
     const showTotal = d < 0.4;
     let golden = false;
 
-    const rule = h('div', { class: 'pass-rule' }, `PASS MARK: ${passMark}%`);
+    const rule = h('div', { class: 'pass-rule' }, t('stamp.passMark', { n: passMark }));
     const paperHolder = h('div', { class: 'paper-holder' });
     const kidFace = h('div', { class: 'reaction-face' }, '🙂');
     const kidSay = h('div', { class: 'reaction-say hidden' });
@@ -37,7 +30,7 @@ export default {
     api.setControls(h('div', { class: 'controls-row' }, aBtn, fBtn));
 
     api.addPower({
-      label: 'Golden Stamp',
+      label: t('stamp.golden'),
       icon: '✨',
       adUnit: AD_UNITS.GOLDEN_STAMP,
       onReward: activateGolden,
@@ -58,9 +51,9 @@ export default {
       score = Math.max(0, Math.min(n, score));
       const marks = shuffle(Array.from({ length: n }, (_, i) => i < score));
       return {
-        name: pick(STUDENT_NAMES),
+        name: pick(studentNames()),
         face: pick(STUDENT_FACES),
-        subject: pick(SUBJECTS),
+        subject: pick(testSubjects()),
         n,
         score,
         marks,
@@ -77,13 +70,13 @@ export default {
       paperEl = h(
         'div',
         { class: 'paper test-paper paper-enter' },
-        h('div', { class: 'paper-header' }, h('span', {}, `${p.subject} Test`), h('span', { class: 'font-hand' }, p.name)),
+        h('div', { class: 'paper-header' }, h('span', {}, t('stamp.test', { subject: p.subject })), h('span', { class: 'font-hand' }, p.name)),
         h(
           'div',
           { class: 'marks-grid' },
-          p.marks.map((ok, i) => h('div', { class: `mark-cell ${ok ? 'ok' : 'bad'}` }, h('span', { class: 'qnum' }, `${i + 1}.`), ok ? '✔' : '✘')),
+          p.marks.map((ok, i) => h('div', { class: `mark-cell ${ok ? 'ok' : 'bad'}` }, h('span', { class: 'qnum' }, `${digits(i + 1)}.`), ok ? '✔' : '✘')),
         ),
-        h('div', { class: 'score-line' }, showTotal ? `Score: ${p.score} / ${p.n}` : `Score: ___ / ${p.n}`),
+        h('div', { class: 'score-line' }, showTotal ? t('stamp.score', { score: p.score, n: p.n }) : t('stamp.scoreBlank', { n: p.n })),
         h('div', { class: 'stamp-slot big' }),
       );
       paperHolder.replaceChildren(paperEl);
@@ -113,11 +106,11 @@ export default {
       if (grade === 'A+') {
         kid.className = 'reaction-kid happy';
         kidFace.textContent = pick(['🥳', '😁', '🤩']);
-        kidSay.textContent = pick(['Yay!!', 'I did it!', 'Best day ever!', 'Woohoo!']);
+        kidSay.textContent = pick(t('stamp.happy'));
       } else {
         kid.className = 'reaction-kid shocked';
         kidFace.textContent = pick(['😱', '😭', '🙀']);
-        kidSay.textContent = pick(['Noooo!', 'Whaaat?!', 'My mom…', 'Not again!']);
+        kidSay.textContent = pick(t('stamp.sad'));
       }
       kidSay.classList.remove('hidden');
       if (right) {
@@ -125,7 +118,7 @@ export default {
         if (golden) api.bonus(10 + api.level, paperEl);
       } else {
         api.wrong(paperEl);
-        paperEl.appendChild(h('div', { class: 'correction' }, `Real score: ${p.score}/${p.n} (${Math.round((p.score / p.n) * 100)}%) → ${p.pass ? 'A+' : 'F'}`));
+        paperEl.appendChild(h('div', { class: 'correction' }, t('stamp.realScore', { score: p.score, n: p.n, pct: Math.round((p.score / p.n) * 100), grade: p.pass ? 'A+' : 'F' })));
       }
       getState().stats.papersMarked++;
       saveState();
@@ -149,8 +142,8 @@ export default {
       paperHolder.classList.add('golden-glow');
       api.toast(
         design
-          ? `✨ Golden Stamp! New design unlocked: ${design.icon} ${design.name}. Coins x${BOOSTS.goldenStampMultiplier} for ${BOOSTS.goldenStampMinutes} min!`
-          : `✨ Golden Stamp! Coins x${BOOSTS.goldenStampMultiplier} for ${BOOSTS.goldenStampMinutes} min!`,
+          ? t('stamp.goldenToastDesign', { icon: design.icon, name: design.name, mult: BOOSTS.goldenStampMultiplier, min: BOOSTS.goldenStampMinutes })
+          : t('stamp.goldenToast', { mult: BOOSTS.goldenStampMultiplier, min: BOOSTS.goldenStampMinutes }),
         'success',
         3200,
       );

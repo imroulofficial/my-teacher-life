@@ -5,10 +5,11 @@ import { go } from '../core/router.js';
 import { sfx } from '../core/audio.js';
 import { STAMP_DESIGNS, isUnlocked, activeDesign, setActiveDesign } from '../core/stamps.js';
 import { topBar } from './common.js';
+import { t, digits } from '../i18n/index.js';
 
 export default {
   render(root) {
-    const bar = topBar({ title: '🏅 Stamps & Stats', onBack: () => go('home') });
+    const bar = topBar({ title: t('collection.title'), onBack: () => go('home') });
     const grid = h('div', { class: 'stamp-grid' });
     const s = getState();
 
@@ -22,12 +23,12 @@ export default {
             { class: `stamp-card ${un ? '' : 'locked'} ${active.id === d.id ? 'active' : ''}` },
             h('div', { class: 'stamp-preview', style: { color: d.color, borderColor: d.color } }, un ? d.icon : '🔒', h('span', { class: 'stamp-preview-grade' }, 'A+')),
             h('div', { class: 'stamp-name' }, un ? d.name : '???'),
-            active.id === d.id ? h('div', { class: 'stamp-equipped' }, 'EQUIPPED') : null,
+            active.id === d.id ? h('div', { class: 'stamp-equipped' }, t('collection.equipped')) : null,
           );
           card.addEventListener('click', () => {
             if (!un) {
               sfx('wrong');
-              toast('Unlock with ✨ Golden Stamp in Test Result levels!');
+              toast(t('collection.lockedHint'));
               return;
             }
             setActiveDesign(d.id);
@@ -45,19 +46,19 @@ export default {
     const stats = h(
       'div',
       { class: 'stats-card' },
-      h('div', { class: 'stats-title' }, `👩‍🏫 ${s.teacherName}'s Record`),
+      h('div', { class: 'stats-title' }, t('collection.record', { name: s.teacherName === 'Teacher' ? t('settings.defaultName') : s.teacherName })),
       ...[
-        ['⭐ Stars earned', totalStars],
-        ['🎓 Lessons played', st.levelsPlayed],
-        ['📝 Papers marked', st.papersMarked],
-        ['🚨 Cheaters caught', st.cheatersCaught],
-        ['🎒 Bags checked', st.bagsChecked],
-        ['📚 Books sorted', st.booksSorted],
-        ['🪙 Total coins earned', fmt(s.totalCoinsEarned)],
+        [t('collection.stars'), digits(totalStars)],
+        [t('collection.lessons'), digits(st.levelsPlayed)],
+        [t('collection.papers'), digits(st.papersMarked)],
+        [t('collection.cheaters'), digits(st.cheatersCaught)],
+        [t('collection.bags'), digits(st.bagsChecked)],
+        [t('collection.books'), digits(st.booksSorted)],
+        [t('collection.totalCoins'), fmt(s.totalCoinsEarned)],
       ].map(([k, v]) => h('div', { class: 'stats-row' }, h('span', {}, k), h('b', {}, String(v)))),
     );
 
-    root.append(bar, h('div', { class: 'collection' }, h('div', { class: 'section-title' }, 'Golden Stamp Designs'), grid, stats));
+    root.append(bar, h('div', { class: 'collection' }, h('div', { class: 'section-title' }, t('collection.section')), grid, stats));
     return () => bar.destroy();
   },
   onBack() {

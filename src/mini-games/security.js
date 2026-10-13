@@ -4,45 +4,40 @@
 import { h, btn, pick, shuffle, randInt } from '../core/ui.js';
 import { AD_UNITS, BOOSTS } from '../core/config.js';
 import { getState, saveState } from '../core/storage.js';
-import { ALLOWED_ITEMS, BANNED_ITEMS, METAL_ITEMS, COVER_ITEMS, STUDENT_NAMES, STUDENT_FACES, SHIRT_COLORS } from './data.js';
+import { ALLOWED_ITEMS, bannedItems, METAL_ITEMS, COVER_ITEMS, studentNames, STUDENT_FACES, SHIRT_COLORS } from './data.js';
+import { t } from '../i18n/index.js';
 
 export default {
   id: 'security',
-  howTo: [
-    'Students arrive one by one through the metal detector.',
-    'The detector beeps 🔴 for ANY metal — even keys and rulers. It is only a hint!',
-    'Look in the bag. Tap 👕 clothes to peek under them.',
-    'Banned item inside? Press SUSPICIOUS. All clear? Press APPROVE.',
-  ],
 
   start(api) {
     const d = api.difficulty;
-    const bannedPool = BANNED_ITEMS.slice(0, d < 0.3 ? 3 : d < 0.6 ? 4 : 6);
+    const bannedPool = bannedItems().slice(0, d < 0.3 ? 3 : d < 0.6 ? 4 : 6);
     const bannedIcons = bannedPool.map((b) => b.icon);
 
     const banList = h(
       'div',
       { class: 'ban-list' },
-      h('span', { class: 'font-bold mr-1' }, '🚫 BANNED:'),
+      h('span', { class: 'font-bold mr-1' }, t('security.banned')),
       bannedPool.map((b) => h('span', { class: 'ban-item', title: b.name }, b.icon)),
     );
     const light = h('div', { class: 'detector-light' });
     const walker = h('div', { class: 'walker' });
     const queue = h('div', { class: 'queue' });
-    const gate = h('div', { class: 'detector' }, h('div', { class: 'detector-top' }, light, h('span', { class: 'detector-label' }, 'SCAN')), h('div', { class: 'detector-arch' }));
+    const gate = h('div', { class: 'detector' }, h('div', { class: 'detector-top' }, light, h('span', { class: 'detector-label' }, t('security.scan'))), h('div', { class: 'detector-arch' }));
     const corridor = h('div', { class: 'corridor' }, queue, gate, walker);
     const bag = h('div', { class: 'bag-grid' });
-    const bagWrap = h('div', { class: 'bag-wrap' }, h('div', { class: 'bag-title' }, '🎒 Bag check'), bag);
+    const bagWrap = h('div', { class: 'bag-wrap' }, h('div', { class: 'bag-title' }, t('security.bag')), bag);
     api.stage.append(h('div', { class: 'security-scene' }, banList, corridor, bagWrap));
 
-    const susBtn = btn('SUSPICIOUS', { color: 'red', icon: '🚨', size: 'lg', cls: 'action-btn', onClick: () => decide(true) });
-    const okBtn = btn('APPROVE', { color: 'green', icon: '✅', size: 'lg', cls: 'action-btn', onClick: () => decide(false) });
+    const susBtn = btn(t('security.suspicious'), { color: 'red', icon: '🚨', size: 'lg', cls: 'action-btn', onClick: () => decide(true) });
+    const okBtn = btn(t('security.approve'), { color: 'green', icon: '✅', size: 'lg', cls: 'action-btn', onClick: () => decide(false) });
     api.setControls(h('div', { class: 'controls-row' }, susBtn, okBtn));
 
     // "Stuck" helper — always available, pulses when the player struggles.
     let xray = false;
     const vip = api.addPower({
-      label: `X-Ray Vision ${BOOSTS.xraySeconds}s`,
+      label: t('security.xray', { n: BOOSTS.xraySeconds }),
       icon: '🩻',
       adUnit: AD_UNITS.SCANNER_VIP,
       onReward: startXray,
@@ -74,7 +69,7 @@ export default {
       const decoys = randInt(0, Math.round(2 * d));
       for (let k = 0; k < decoys; k++) slots.splice(randInt(0, slots.length), 0, { icon: '', banned: false, hidden: true, cover: pick(COVER_ITEMS) });
       return {
-        name: pick(STUDENT_NAMES),
+        name: pick(studentNames()),
         face: pick(STUDENT_FACES),
         shirt: pick(SHIRT_COLORS),
         slots,
@@ -152,7 +147,7 @@ export default {
         api.wrong(walker);
         mistakes++;
         if (mistakes >= 2 && !vip.used) vip.pulse(true);
-        api.toast(s.hasBanned ? '😬 A banned item slipped through!' : '😕 That bag was clean.', 'error');
+        api.toast(s.hasBanned ? t('security.slipped') : t('security.clean'), 'error');
       }
       walker.className = `walker ${suspicious ? 'walk-office' : 'walk-out'}`;
       api.after(right ? 1.0 : 1.6, () => {
@@ -165,11 +160,11 @@ export default {
       xray = true;
       vip.pulse(false);
       bag.classList.add('xray');
-      api.toast(`🩻 X-Ray Vision for ${BOOSTS.xraySeconds} seconds!`, 'success');
+      api.toast(t('security.xrayOn', { n: BOOSTS.xraySeconds }), 'success');
       api.after(BOOSTS.xraySeconds, () => {
         xray = false;
         bag.classList.remove('xray');
-        api.toast('X-Ray Vision ended.');
+        api.toast(t('security.xrayOff'));
       });
     }
 
