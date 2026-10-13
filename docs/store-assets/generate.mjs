@@ -4,8 +4,7 @@
 //   node docs/store-assets/generate.mjs    # needs Playwright (see README.md)
 //
 // Outputs:
-//   app-icon-512.png            512x512  (full square; Google Play rounds it)
-//   app-icon-512-rounded.png    512x512  (pre-rounded, transparent corners)
+//   (app icons: run generate-icons.mjs)
 //   feature-graphic-1024x500.png 1024x500 (no alpha)
 //   screenshot-1..4.png         1080x1920 (no alpha) - real game screens
 import { createRequire } from 'node:module';
@@ -55,8 +54,7 @@ async function renderTemplate(file, query, w, h, target, transparent = false) {
   console.log('✔', target);
 }
 
-await renderTemplate('icon.html', '', 512, 512, 'app-icon-512.png');
-await renderTemplate('icon.html', '?rounded=1', 512, 512, 'app-icon-512-rounded.png', true);
+// App icons (store + Android launcher) are produced by generate-icons.mjs.
 await renderTemplate('feature.html', '', 1024, 500, 'feature-graphic-1024x500.png');
 
 // ---------------------------------------------------------------- game screenshots
