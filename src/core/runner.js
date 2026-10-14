@@ -7,6 +7,7 @@ import { GAME_INFO, gameForLevel, difficultyFor, roundsFor, baseCoinsFor, levelL
 import { addCoins, levelCoinMultiplier, isBoostActive, boostRemainingMs } from './economy.js';
 import { GAMES } from '../mini-games/index.js';
 import { rewardOfferPanel } from './reward-offer.js';
+import { recordLevelPlayed } from './engagement.js';
 import { t, digits } from '../i18n/index.js';
 import { go } from './router.js';
 
@@ -319,6 +320,7 @@ export function runLevel(root, level) {
     const passed = stars > 0;
     const starMult = [0.25, 1, 1.25, 1.6][stars];
     const coins = Math.round(baseCoinsFor(level) * (0.5 + 0.5 * acc) * starMult * levelCoinMultiplier()) + bonusCoins;
+    recordLevelPlayed(); // daily streak + once-a-day bonus
     addCoins(coins);
     s.stats.levelsPlayed++;
     const prevStars = s.stars[level] || 0;

@@ -6,6 +6,7 @@ import { sfx } from '../core/audio.js';
 import { showPrivacyOptions, privacyOptionsAvailable } from '../core/ads.js';
 import { APP } from '../core/config.js';
 import { topBar } from './common.js';
+import { ENGAGEMENT_KEYS } from '../core/engagement.js';
 import { t, currentLang, setLanguage, LANGUAGES } from '../i18n/index.js';
 
 function toggle(label, key) {
@@ -83,6 +84,11 @@ export default {
             const ok = await confirmModal(t('settings.resetTitle'), t('settings.resetText'), t('settings.resetBtn'));
             if (ok) {
               resetState();
+              try {
+                ENGAGEMENT_KEYS.forEach((k) => localStorage.removeItem(k));
+              } catch (e) {
+                /* ignore */
+              }
               toast(t('settings.resetDone'), 'success');
               go('home');
             }

@@ -47,6 +47,11 @@ export default {
 
   map: { title: '🗺️ Levels' },
 
+  engage: {
+    streak: '{n}-day streak',
+    dailyBonus: '🌟 Daily Bonus! +{n} coins',
+  },
+
   game: {
     paused: '⏸ Paused',
     quit: 'Quit',

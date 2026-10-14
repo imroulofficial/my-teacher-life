@@ -5,6 +5,7 @@ import { go } from '../core/router.js';
 import { incomePerHour, currentSize } from '../core/economy.js';
 import { GAME_INFO, gameForLevel, levelLabel } from '../core/levels.js';
 import { topBar } from './common.js';
+import { streakChip } from '../core/engagement.js';
 import { APP } from '../core/config.js';
 import { t, digits, currentLang } from '../i18n/index.js';
 
@@ -16,6 +17,8 @@ export default {
     const size = currentSize();
     const totalStars = Object.values(s.stars).reduce((a, b) => a + b, 0);
     const bar = topBar({ title: '' });
+    const streak = streakChip();
+    if (streak) bar.lastChild.prepend(streak); // next to the coin balance
 
     const view = h(
       'div',

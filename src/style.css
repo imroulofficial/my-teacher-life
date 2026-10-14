@@ -2360,3 +2360,52 @@ input {
   background: transparent;
 }
 .lang-switch-btn.on { background: linear-gradient(180deg, #4ade80, #16a34a); color: #fff; box-shadow: 0 3px 0 #166534; }
+
+/* ---------------------------------------------------------------- engagement: streak, daily bonus, progress, near-miss, milestones */
+.streak-chip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 16px;
+  white-space: nowrap;
+  color: #9a3412;
+  background: linear-gradient(180deg, #fff, #fed7aa);
+  box-shadow: 0 3px 0 #fb923c, inset 0 1px 0 #fff;
+}
+.streak-chip.hot {
+  color: #7c4a03;
+  background: linear-gradient(180deg, #fff7d6, #facc15);
+  box-shadow: 0 3px 0 #ca8a04, 0 0 12px rgba(250, 204, 21, 0.7);
+  animation: pulseSoft 1.8s ease-in-out infinite;
+}
+.celebrate {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none; /* never blocks the game */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  transition: opacity 0.3s;
+}
+.celebrate.out { opacity: 0; }
+.celebrate.daily-bonus { align-items: flex-start; padding-top: calc(10px + var(--safe-top, 0px)); }
+.celebrate-text {
+  max-width: 90%;
+  text-align: center;
+  font-weight: 700;
+  animation: celebratePop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.daily-bonus .celebrate-text {
+  padding: 12px 22px;
+  border-radius: 22px;
+  font-size: 22px;
+  color: #7c2d12;
+  background: linear-gradient(180deg, #fde68a, #f59e0b);
+  box-shadow: 0 5px 0 #b45309, 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+@keyframes celebratePop {
+  from { transform: scale(0.3); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
