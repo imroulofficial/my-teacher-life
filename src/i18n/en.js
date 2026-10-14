@@ -51,6 +51,13 @@ export default {
     streak: '{n}-day streak',
     dailyBonus: '🌟 Daily Bonus! +{n} coins',
     progress: "You've completed {pct}% of the game",
+    correctPct: 'You were {pct}% correct',
+    nearMiss: {
+      close: 'So close! Just one more correct answer.',
+      great: "Great try! You're almost there.",
+      good: 'Good effort! Practice makes perfect.',
+      keep: 'Keep going! Every teacher starts here.',
+    },
   },
 
   game: {
@@ -60,9 +67,8 @@ export default {
     resume: 'Resume',
     couldNotStart: 'Oops, this lesson could not start.',
     complete: '{level} Complete!',
-    failed: 'Level Failed',
+    failed: "Let's Try Again!",
     praise: ['Great teaching!', 'Well done!', 'Superb!', 'Perfect class!'],
-    failText: 'Class dismissed… try again!',
     accuracy: 'Accuracy {pct}%  ·  ✔ {ok}  ✘ {bad}',
     boostActive: '✨ Golden boost x2 active ({m} min left)',
     chapterDone: '🏆 Chapter "{name}" complete!',

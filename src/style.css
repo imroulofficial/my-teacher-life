@@ -2395,6 +2395,19 @@ input {
   background: linear-gradient(90deg, #f59e0b, #f97316);
   transition: width 1s ease-out;
 }
+.near-miss {
+  margin: 10px auto 2px;
+  padding: 12px 14px;
+  border-radius: 20px;
+  text-align: center;
+  background: linear-gradient(180deg, #fffbeb, #fef3c7);
+  border: 2px solid #fcd34d;
+}
+.near-miss-good, .near-miss-keep { background: linear-gradient(180deg, #eff6ff, #dbeafe); border-color: #93c5fd; }
+.near-miss-msg { font-size: 20px; font-weight: 700; line-height: 1.25; color: #92400e; }
+.near-miss-good .near-miss-msg, .near-miss-keep .near-miss-msg { color: #1e40af; }
+.near-miss-pct { margin-top: 6px; font-size: 26px; font-weight: 700; color: #b45309; }
+.near-miss-good .near-miss-pct, .near-miss-keep .near-miss-pct { color: #2563eb; }
 .celebrate {
   position: fixed;
   inset: 0;
@@ -2427,6 +2440,9 @@ input {
   to { transform: scale(1); opacity: 1; }
 }
 @media (max-height: 640px) {
+  .near-miss { margin-top: 6px; padding: 8px 10px; }
+  .near-miss-msg { font-size: 17px; }
+  .near-miss-pct { font-size: 21px; margin-top: 2px; }
   .progress-card { padding: 6px 12px 8px; }
   .progress-text { font-size: 14px; }
 }

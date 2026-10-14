@@ -7,7 +7,7 @@ import { GAME_INFO, gameForLevel, difficultyFor, roundsFor, baseCoinsFor, levelL
 import { addCoins, levelCoinMultiplier, isBoostActive, boostRemainingMs } from './economy.js';
 import { GAMES } from '../mini-games/index.js';
 import { rewardOfferPanel } from './reward-offer.js';
-import { recordLevelPlayed } from './engagement.js';
+import { recordLevelPlayed, nearMiss } from './engagement.js';
 import { t, digits } from '../i18n/index.js';
 import { go } from './router.js';
 
@@ -347,8 +347,8 @@ export function runLevel(root, level) {
       'div',
       { class: 'text-center' },
       starRow,
-      h('div', { class: 'text-2xl font-bold mt-2' }, passed ? t('game.praise')[stars] : t('game.failText')),
-      h('div', { class: 'mt-1 opacity-80' }, t('game.accuracy', { pct: Math.round(acc * 100), ok: correct, bad: wrong })),
+      passed ? h('div', { class: 'text-2xl font-bold mt-2' }, t('game.praise')[stars]) : nearMiss(correct, wrong),
+      passed ? h('div', { class: 'mt-1 opacity-80' }, t('game.accuracy', { pct: Math.round(acc * 100), ok: correct, bad: wrong })) : null,
       coinsEl,
       isBoostActive() ? h('div', { class: 'text-sm text-amber-600 font-bold' }, t('game.boostActive', { m: Math.ceil(boostRemainingMs() / 60000) })) : null,
       chapterDone ? h('div', { class: 'chapter-done' }, t('game.chapterDone', { name: chapterOf(level).name })) : null,

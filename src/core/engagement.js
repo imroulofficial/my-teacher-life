@@ -110,6 +110,27 @@ export function progressCard() {
   return card;
 }
 
+// ---------------------------------------------------------------- near-miss encouragement
+
+/**
+ * Encouragement for a failed level. `passAcc` is the accuracy needed to pass.
+ * Bands use how far the player got towards the pass mark; "one more answer" is
+ * only said when exactly one more correct answer would really have passed.
+ */
+export function nearMiss(correct, wrong, passAcc = 0.5) {
+  const total = correct + wrong;
+  const acc = total ? correct / total : 0;
+  const ratio = acc / passAcc;
+  const oneMore = total > 0 && (correct + 1) / total >= passAcc;
+  const band = oneMore ? 'close' : ratio >= 0.75 ? 'great' : ratio >= 0.5 ? 'good' : 'keep';
+  return h(
+    'div',
+    { class: `near-miss near-miss-${band}` },
+    h('div', { class: 'near-miss-msg' }, t(`engage.nearMiss.${band}`)),
+    h('div', { class: 'near-miss-pct' }, t('engage.correctPct', { pct: Math.round(acc * 100) })),
+  );
+}
+
 // ---------------------------------------------------------------- celebration overlay (non-blocking)
 
 const queue = [];
