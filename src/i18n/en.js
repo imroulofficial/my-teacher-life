@@ -58,6 +58,7 @@ export default {
       good: 'Good effort! Practice makes perfect.',
       keep: 'Keep going! Every teacher starts here.',
     },
+    milestone: '🎉 {n} coins!',
   },
 
   game: {

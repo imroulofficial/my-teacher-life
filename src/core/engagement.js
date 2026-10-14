@@ -131,6 +131,28 @@ export function nearMiss(correct, wrong, passAcc = 0.5) {
   );
 }
 
+// ---------------------------------------------------------------- coin milestones
+
+function checkMilestone() {
+  const total = getState().totalCoinsEarned;
+  const last = read(KEY_MILESTONE, null);
+  const reached = MILESTONES.filter((m) => total >= m).pop() || 0;
+  if (last === null) {
+    // First run with this feature: don't celebrate coins earned before it existed.
+    write(KEY_MILESTONE, reached);
+    return;
+  }
+  if (reached <= last) return;
+  write(KEY_MILESTONE, reached);
+  celebrate({ cls: 'milestone', text: t('engage.milestone', { n: digits(reached.toLocaleString('en-US')) }), ms: 1500, sound: 'star', confetti: true });
+}
+
+/** Starts listening for coin changes (call once at boot). */
+export function initEngagement() {
+  checkMilestone();
+  window.addEventListener('mtl:coins', checkMilestone);
+}
+
 // ---------------------------------------------------------------- celebration overlay (non-blocking)
 
 const queue = [];

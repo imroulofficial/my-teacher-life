@@ -17,6 +17,7 @@ import { AD_UNITS } from './core/config.js';
 import { unlockAudioOnFirstTouch, sfx } from './core/audio.js';
 import { h, modal, toast, fmt, fmtDuration, confetti, closeTopModal } from './core/ui.js';
 import { computeOfflineEarnings, touchLastSeen, addCoins } from './core/economy.js';
+import { initEngagement } from './core/engagement.js';
 import { registerScreen, go, handleBack, refresh, currentScreen } from './core/router.js';
 import { t, setLanguage, hasChosenLanguage, onLanguageChange, LANGUAGES } from './i18n/index.js';
 
@@ -179,6 +180,7 @@ onLanguageChange(() => {
 
 async function boot() {
   loadState();
+  initEngagement();
   unlockAudioOnFirstTouch();
   setupLifecycle();
   go('home');
