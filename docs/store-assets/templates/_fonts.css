@@ -2,3 +2,4 @@
 @font-face { font-family: 'Fredoka'; font-weight: 700; src: url('../../../node_modules/@fontsource/fredoka/files/fredoka-latin-700-normal.woff2') format('woff2'); }
 @font-face { font-family: 'Patrick Hand'; font-weight: 400; src: url('../../../node_modules/@fontsource/patrick-hand/files/patrick-hand-latin-400-normal.woff2') format('woff2'); }
 html, body { margin: 0; padding: 0; }
+@font-face { font-family: 'Baloo Da 2'; font-weight: 700; src: url('../../../node_modules/@fontsource/baloo-da-2/files/baloo-da-2-bengali-700-normal.woff2') format('woff2'); unicode-range: U+0964-0965, U+0980-09FE, U+200C-200D, U+25CC; }

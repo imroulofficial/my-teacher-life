@@ -3,14 +3,16 @@
 //   npm run build                          # build the game into dist/ first
 //   node docs/store-assets/generate.mjs    # needs Playwright (see README.md)
 //
-// Outputs:
+// Outputs (all PNG without alpha):
+//   badge-120levels.png          128x128   "120 Levels" medal (also used on the feature graphic)
+//   feature-graphic-1024x500.png 1024x500
+//   screenshot-1..6.png          1080x1920 caption strip (240 px) + real game capture (1080x1680)
 //   (app icons: run generate-icons.mjs)
-//   feature-graphic-1024x500.png 1024x500 (no alpha)
-//   screenshot-1..4.png         1080x1920 (no alpha) - real game screens
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
+import os from 'node:os';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '../..');
@@ -40,164 +42,166 @@ if (!fs.existsSync(path.join(root, 'dist/index.html'))) {
 const out = (name) => path.join(here, name);
 const tpl = (name, query = '') => pathToFileURL(path.join(here, 'templates', name)).href + query;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'mtl-shots-'));
 
 const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 
-// ---------------------------------------------------------------- icon + feature graphic
-async function renderTemplate(file, query, w, h, target, transparent = false) {
-  const page = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
+// ---------------------------------------------------------------- badge + feature graphic
+async function renderTemplate(file, query, w, h, target, scale = 1) {
+  const page = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: scale });
   await page.goto(tpl(file, query));
   await page.evaluate(() => document.fonts.ready);
+  await page.waitForFunction(() => [...document.images].every((i) => i.complete));
   await sleep(300);
-  await page.screenshot({ path: out(target), omitBackground: transparent });
+  await page.screenshot({ path: target });
   await page.close();
-  console.log('✔', target);
+  console.log('✔', path.basename(target));
 }
 
-// App icons (store + Android launcher) are produced by generate-icons.mjs.
-await renderTemplate('feature.html', '', 1024, 500, 'feature-graphic-1024x500.png');
+await renderTemplate('badge.html', '', 128, 128, out('badge-120levels.png'));
+await renderTemplate('feature.html', '', 1024, 500, out('feature-graphic-1024x500.png'));
 
 // ---------------------------------------------------------------- game screenshots
 const server = await preview({ root, logLevel: 'silent', preview: { port: 4321, strictPort: false, host: '127.0.0.1' } });
 const base = server.resolvedUrls.local[0];
 
-function saveFor(level) {
+const ALL_GAMES = ['spelling', 'qa', 'match', 'cheating', 'stamp', 'security', 'library', 'attendance', 'math', 'homework', 'boss'];
+const BADGES = ['chapter1', 'perfect', 'streak7', 'coins10k', 'matchMaster', 'boss5', 'bilingual', 'daily10', 'speedy', 'chapter5', 'chapter8', 'chapter12'];
+
+/** A believable save at `level`: earlier levels starred, tutorials and chapter cards already seen. */
+function saveFor(level, { badges = 0, coins = 2450 } = {}) {
   const stars = {};
   for (let l = 1; l < level; l++) stars[l] = l % 4 === 0 ? 2 : 3;
+  const bossWins = {};
+  for (const b of [60, 70, 80, 90, 100, 110, 120]) if (b < level) bossWins[b] = true;
+  const now = Date.now();
   return {
     teacherName: 'Ms. Lily',
-    coins: 2450,
+    coins,
+    totalCoinsEarned: coins * 4,
     unlockedLevel: level,
     stars,
-    lastSeen: Date.now(),
-    tutorialsSeen: { spelling: true, qa: true, match: true, cheating: true, stamp: true, security: true, library: true },
+    bossWins,
+    tutorialsSeen: Object.fromEntries(ALL_GAMES.map((g) => [g, true])),
+    chapterIntrosReady: true,
+    chaptersSeen: Object.fromEntries(Array.from({ length: 12 }, (_, i) => [i + 1, true])),
+    achievements: Object.fromEntries(BADGES.slice(0, badges).map((id, i) => [id, now - i * 86400000])),
+    stats: { levelsPlayed: level + 9, dailyBonuses: 6, perfectLevels: 4, fastestWin: 12.6 },
+    langsPlayed: ['en', 'bn'],
     settings: { sound: false, vibration: false },
   };
 }
 
-// 360x640 CSS px at 3x = exactly 1080x1920 PNG
-async function openGame(level) {
-  const ctx = await browser.newContext({ viewport: { width: 360, height: 640 }, deviceScaleFactor: 3, hasTouch: true, isMobile: true });
-  await ctx.addInitScript((save) => {
-    localStorage.setItem('mtl_save_v1', JSON.stringify({ ...save, lastSeen: Date.now() }));
-  }, saveFor(level));
-  await ctx.addInitScript(() => {
-    window.__stageHud = (width, text, score) => {
-      const apply = () => {
-        document.querySelector('.hud-progress-fill').style.width = width;
-        document.querySelector('.hud-progress-text').textContent = text;
-        document.querySelector('.hud-score').textContent = score;
-      };
-      apply();
-      setInterval(apply, 20);
-    };
-  });
+// The game area is 360x560 CSS px at 3x = 1080x1680 px; the caption strip adds the top 240 px.
+async function openGame({ lang = 'en', level, streak = 5, badges = 0, coins }) {
+  const ctx = await browser.newContext({ viewport: { width: 360, height: 560 }, deviceScaleFactor: 3, hasTouch: true, isMobile: true });
+  await ctx.addInitScript(
+    ({ lang, save, streak }) => {
+      if (sessionStorage.getItem('seeded')) return;
+      sessionStorage.setItem('seeded', '1');
+      const d = new Date();
+      const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      localStorage.setItem('mtl_lang', lang);
+      localStorage.setItem('mtl_save_v1', JSON.stringify({ ...save, lastSeen: Date.now() }));
+      localStorage.setItem('mtl_streak', JSON.stringify({ count: streak, lastPlayedDate: today }));
+      localStorage.setItem('mtl_last_daily_bonus', JSON.stringify(today)); // no bonus pop-up in the shots
+      localStorage.setItem('mtl_last_milestone', '100000');
+    },
+    { lang, save: saveFor(level, { badges, coins }), streak },
+  );
   const page = await ctx.newPage();
   await page.goto(base);
   await page.waitForSelector('.home');
   await page.waitForSelector('#splash', { state: 'detached' });
+  await sleep(600);
   return { ctx, page };
 }
 
-async function startLevel(page) {
+/** Home -> PLAY -> level intro (-> START). */
+async function openLevel(page, start = true) {
   await page.click('.play-btn', { force: true });
   await page.waitForSelector('.intro-card');
-  await page.locator('button', { hasText: 'START' }).click({ force: true });
+  await sleep(500);
+  if (!start) return;
+  await page.locator('.intro-card .btn3d').last().click({ force: true });
   await page.waitForSelector('.game-wrap');
 }
 
-async function shot(page, ctx, name) {
-  await page.screenshot({ path: out(name) });
+async function capture(page, ctx, name, caption) {
+  const raw = path.join(tmp, name);
+  await page.screenshot({ path: raw });
   await ctx.close();
-  console.log('✔', name);
+  await renderTemplate('frame.html', '#' + encodeURIComponent(JSON.stringify({ ...caption, shot: pathToFileURL(raw).href })), 360, 640, out(name), 3);
 }
 
-// 1) Title / home screen
+// 1) Home: PLAY button, 🔥 streak chip, trophy count
 {
-  const { ctx, page } = await openGame(12);
-  await sleep(1500);
-  await shot(page, ctx, 'screenshot-1.png');
+  const { ctx, page } = await openGame({ level: 34, streak: 5, badges: 5 });
+  await capture(page, ctx, 'screenshot-1.png', { badge: true, title: '120 Levels • 10 Mini-Games', sub: 'Grade papers, run lessons and grow your own school' });
 }
 
-// 2) Spelling & Picture Check - "Grepes" crossed, Monkey and Rocket already ticked
+// 2) Attendance Call (new): a class of 12, the first names already marked present
 {
-  const { ctx, page } = await openGame(1);
-  await startLevel(page);
-  await page.waitForSelector('.paper');
+  const { ctx, page } = await openGame({ level: 66 });
+  await openLevel(page);
+  await page.waitForSelector('.roll-student');
+  for (let i = 0; i < 4; i++) {
+    await page.evaluate(() => {
+      const left = [...document.querySelectorAll('.roll-student:not(.present)')];
+      const first = (el) => el.querySelector('.roll-name').textContent.charAt(0).toUpperCase();
+      left.sort((a, b) => (first(a) < first(b) ? -1 : 1))[0].click();
+    });
+    await sleep(450);
+  }
   await sleep(900);
-  await page.evaluate(() => {
-    const paper = document.querySelector('.paper');
-    paper.querySelector('.picture-frame').textContent = '🍇';
-    paper.querySelector('.handwriting').textContent = 'Grepes';
-    paper.querySelector('.paper-header .font-hand').textContent = 'Name: Amara';
-    paper.querySelector('.paper-question').textContent = 'Q3. Write the name of this picture:';
-    paper.querySelector('.stamp-slot').innerHTML = '<div class="red-mark cross">✘</div>';
-    // graded papers tray (already marked: Monkey ✔, Rocket ✔)
-    const pile = document.querySelector('.paper-pile');
-    pile.remove();
-    const tray = document.createElement('div');
-    tray.style.cssText = 'position:absolute;top:8px;left:10px;right:10px;display:flex;gap:8px;justify-content:center;z-index:2';
-    const mini = (emoji, word) =>
-      `<div style="display:flex;align-items:center;gap:6px;background:#fffaf0;border-radius:10px;padding:4px 10px;box-shadow:0 3px 0 #e7dcc4,0 6px 10px rgba(0,0,0,.15);transform:rotate(${word === 'Monkey' ? -3 : 3}deg)">
-        <span style="font-size:22px">${emoji}</span>
-        <span style="font-family:'Patrick Hand',cursive;font-size:20px;color:#1e3a8a">${word}</span>
-        <span style="color:#ef3b4d;font-weight:700;font-size:22px">✔</span></div>`;
-    tray.innerHTML = mini('🐒', 'Monkey') + mini('🚀', 'Rocket');
-    document.querySelector('.desk-scene').appendChild(tray);
-    document.querySelector('.desk-scene').style.paddingTop = '46px';
-    const [, cross] = document.querySelectorAll('.choice-btn');
-    cross.classList.add('selected');
-    const mark = [...document.querySelectorAll('.action-btn')].find((b) => b.textContent.includes('MARK'));
-    mark.disabled = false;
-    window.__stageHud('33%', '2 / 6', '✔ 2');
-  });
-  await sleep(500);
-  await shot(page, ctx, 'screenshot-2.png');
+  await capture(page, ctx, 'screenshot-2.png', { isNew: true, title: 'Attendance Call', sub: 'Call the roll from A to Z before the bell rings' });
 }
 
-// 3) Classroom Q&A - hands up, the right student selected, SESSION ready
+// 3) Blackboard Math (new) in Bangla, with Bangla digits on the board and the answers
 {
-  const { ctx, page } = await openGame(2);
-  await startLevel(page);
-  await page.waitForFunction(() => document.querySelectorAll('.student.raised').length >= 2, null, { timeout: 10000 });
-  await sleep(800);
-  await page.evaluate(() => {
-    document.querySelector('.chalk-text').textContent = 'What color is a zebra?';
-    const students = [...document.querySelectorAll('.student')];
-    const answers = ['Pink', 'Green', 'Black & White'];
-    students.forEach((s) => {
-      s.classList.remove('raised', 'selected');
-      s.querySelector('.hand').classList.add('hidden');
-      s.querySelector('.bubble').classList.add('hidden');
+  const { ctx, page } = await openGame({ lang: 'bn', level: 92 });
+  await openLevel(page);
+  await page.waitForSelector('.math-opt');
+  // Answer correctly until a × or ÷ sum is on the board (at most a few problems).
+  for (let i = 0; i < 6; i++) {
+    await sleep(500);
+    const text = await page.evaluate(() => document.querySelector('.math-problem').textContent);
+    if (/[×÷]/.test(text)) break;
+    await page.evaluate(() => {
+      const en = (s) => s.replace(/[০-৯]/g, (d) => '০১২৩৪৫৬৭৮৯'.indexOf(d));
+      const [a, op, b] = en(document.querySelector('.math-problem').textContent).replace(/\s/g, '').match(/^(\d+)([+−×÷])(\d+)/).slice(1);
+      const ans = { '+': +a + +b, '−': a - b, '×': a * b, '÷': a / b }[op];
+      [...document.querySelectorAll('.math-opt')].find((o) => +en(o.textContent.trim()) === ans).click();
     });
-    students.slice(0, 3).forEach((s, i) => {
-      s.classList.add('raised');
-      s.querySelector('.hand').classList.remove('hidden');
-      const b = s.querySelector('.bubble');
-      b.classList.remove('hidden', 'faded');
-      b.textContent = answers[i];
-    });
-    students[2].classList.add('selected');
-    students[0].querySelector('.student-stars').textContent = '⭐';
-    students[1].querySelector('.student-stars').textContent = '⭐⭐';
-    const session = [...document.querySelectorAll('.action-btn')].find((b) => b.textContent.includes('SESSION'));
-    session.disabled = false;
-    window.__stageHud('40%', '2 / 5', '✔ 2');
-  });
-  await sleep(600);
-  await shot(page, ctx, 'screenshot-3.png');
+    await sleep(1200);
+  }
+  await sleep(400);
+  await capture(page, ctx, 'screenshot-3.png', { isNew: true, title: 'Blackboard Math', sub: 'বাংলা সংখ্যায় অঙ্ক: যোগ, বিয়োগ, গুণ, ভাগ, ভগ্নাংশ', bnSub: true });
 }
 
-// 4) Exam hall - radar alert, cheater selected, CAUGHT ready
+// 4) Boss level 60: the three lessons played back to back
 {
-  const { ctx, page } = await openGame(11);
-  await startLevel(page);
-  await page.waitForSelector('.exam-student.cheating', { timeout: 15000 });
-  await page.locator('.exam-student.cheating').click({ force: true });
-  await sleep(450);
-  await shot(page, ctx, 'screenshot-4.png');
+  const { ctx, page } = await openGame({ level: 60 });
+  await openLevel(page, false);
+  await capture(page, ctx, 'screenshot-4.png', { icon: '👑', title: 'Boss Levels', sub: '3 lessons in a row. Win them all for 5× coins!' });
+}
+
+// 5) Achievements: 7 of 12 badges unlocked
+{
+  const { ctx, page } = await openGame({ level: 88, badges: 7, coins: 8450 });
+  await page.click('.trophy-btn', { force: true });
+  await page.waitForSelector('.badge-grid');
+  await sleep(1400);
+  await capture(page, ctx, 'screenshot-5.png', { icon: '🏆', title: '12 Achievements', sub: 'Streaks, perfect scores, boss wins and more' });
+}
+
+// 6) Bangla home screen (golden 🔥 streak)
+{
+  const { ctx, page } = await openGame({ lang: 'bn', level: 47, streak: 8, badges: 6 });
+  await capture(page, ctx, 'screenshot-6.png', { icon: '🇧🇩', title: 'বাংলা সমর্থিত', bnTitle: true, sub: 'পুরো খেলা বাংলায়, নিজের ভাষায় পড়াও!', bnSub: true });
 }
 
 await server.close();
 await browser.close();
+fs.rmSync(tmp, { recursive: true, force: true });
 console.log('Done. Files are in', here);

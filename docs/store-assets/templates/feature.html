@@ -2,42 +2,66 @@
 <html><head><meta charset="utf-8"><title>Feature graphic</title>
 <link rel="stylesheet" href="_fonts.css">
 <style>
+  /* 1024x500 Google Play feature graphic. Title in the middle, lesson art around the edges. */
   body { width: 1024px; height: 500px; overflow: hidden; }
-  .fg { position: relative; width: 1024px; height: 500px; overflow: hidden; font-family: 'Fredoka', sans-serif;
-        background: radial-gradient(circle at 18% 10%, rgba(255,255,255,.35), transparent 40%),
-                    linear-gradient(120deg, #FF6B35 0%, #FF9F1C 45%, #FFD23F 100%); }
+  .fg { position: relative; width: 1024px; height: 500px; overflow: hidden; font-family: 'Fredoka', 'Baloo Da 2', sans-serif;
+        background: radial-gradient(ellipse at 50% 42%, rgba(255,255,255,.38), transparent 55%),
+                    linear-gradient(115deg, #FF6B35 0%, #FF9F1C 42%, #FFD23F 100%); }
   .dots { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.18) 2px, transparent 2.5px); background-size: 34px 34px; }
-  .title { position: absolute; left: 56px; top: 92px; line-height: .92; color: #fff; font-weight: 700;
+  .center { position: absolute; left: 0; right: 0; top: 114px; text-align: center; }
+  .title { display: inline-block; font-size: 84px; font-weight: 700; line-height: 1; color: #fff; letter-spacing: -1px;
            -webkit-text-stroke: 3px #c2410c; text-shadow: 0 7px 0 #c2410c, 0 16px 26px rgba(124,45,18,.35); }
-  .t1 { font-size: 78px; }
-  .t2 { font-size: 112px; color: #FFE45C; }
-  .sub { position: absolute; left: 60px; top: 352px; padding: 12px 26px; border-radius: 999px; background: #fff;
-         color: #c2410c; font-weight: 700; font-size: 28px; box-shadow: 0 6px 0 #c2410c, 0 14px 22px rgba(124,45,18,.25); }
-  .art { position: absolute; right: 0; top: 0; width: 520px; height: 500px; }
-  .emoji { position: absolute; line-height: 1; filter: drop-shadow(0 10px 8px rgba(124,45,18,.35)); }
-  .studio { position: absolute; left: 62px; top: 438px; color: rgba(124,45,18,.75); font-weight: 600; font-size: 18px; letter-spacing: 3px; }
+  .title b { color: #FFE45C; font-weight: 700; }
+  .sub { display: inline-block; margin-top: 30px; padding: 12px 30px; border-radius: 999px; background: #fff; color: #c2410c;
+         font-weight: 700; font-size: 32px; box-shadow: 0 6px 0 #c2410c, 0 14px 22px rgba(124,45,18,.25); }
+  .sub .dot { color: #FF9F1C; padding: 0 6px; }
+  .badge120 { position: absolute; left: 22px; top: 20px; width: 104px; height: 104px; border-radius: 26px;
+              box-shadow: 0 6px 0 #c2410c, 0 12px 20px rgba(124,45,18,.35); }
+  .bangla { position: absolute; right: 22px; top: 24px; display: flex; align-items: center; gap: 10px; padding: 8px 18px 8px 12px;
+            border-radius: 999px; background: #fff; color: #166534; font-size: 25px; font-weight: 700;
+            box-shadow: 0 5px 0 #15803d, 0 10px 18px rgba(20,83,45,.3); }
+  .bangla .flag { font-size: 30px; line-height: 1; }
+  .bangla .bn { font-family: 'Baloo Da 2', sans-serif; padding-top: 3px; }
+  .art { position: absolute; inset: 0; }
+  .kids { position: absolute; left: 0; right: 0; top: 386px; display: flex; justify-content: center; gap: 4px; font-size: 64px; line-height: 1;
+          filter: drop-shadow(0 8px 6px rgba(124,45,18,.35)); }
+  .kids span { display: inline-block; }
+  .emoji { position: absolute; line-height: 1; filter: drop-shadow(0 8px 7px rgba(124,45,18,.35)); }
 </style></head>
 <body>
 <div class="fg">
   <div class="dots"></div>
-  <div class="title"><div class="t1">My Teacher</div><div class="t2">Life</div></div>
-  <div class="sub">The Ultimate Classroom Simulation</div>
-  <div class="studio">RED PEN STUDIO</div>
   <div class="art" id="art"></div>
-  <div class="emoji" style="left:528px; top:214px; font-size:150px;">👩‍🏫</div>
-  <div class="emoji" style="left:946px; top:22px; font-size:56px; transform:rotate(12deg)">🍎</div>
-  <div class="emoji" style="left:600px; top:60px; font-size:46px; transform:rotate(-12deg)">⭐</div>
-  <div class="emoji" style="left:520px; top:410px; font-size:40px; transform:rotate(-20deg)">✏️</div>
+  <img class="badge120" src="../badge-120levels.png" alt="">
+  <div class="bangla"><span class="flag">🇧🇩</span><span class="bn">বাংলা সমর্থিত</span></div>
+  <div class="center">
+    <div class="title">My Teacher <b>Life</b></div><br>
+    <div class="sub">120 Levels<span class="dot">•</span>10 Mini-Games</div>
+  </div>
+  <div class="kids"><span style="transform:rotate(-6deg)">🧒</span><span>👧🏽</span><span style="transform:translateY(-10px)">👩‍🏫</span><span>👦🏻</span><span style="transform:rotate(6deg)">🙋‍♀️</span></div>
+  <div class="emoji" style="left:236px; top:394px; font-size:44px; transform:rotate(-14deg)">✏️</div>
+  <div class="emoji" style="left:740px; top:400px; font-size:44px; transform:rotate(12deg)">⭐</div>
 </div>
 <script src="_art.js"></script>
 <script>
   const A = window.MTL_ART;
+  // Chalk "math" tile drawn in the same style as the chalkboard.
+  const math = `
+    <g filter="url(#drop)">
+      <rect x="0" y="0" width="150" height="150" rx="26" fill="url(#wood)"/>
+      <rect x="12" y="12" width="126" height="126" rx="16" fill="#1e3a8a"/>
+      <g font-family="Patrick Hand" font-size="58" fill="#f8fafc" text-anchor="middle">
+        <text x="48" y="70">+</text><text x="102" y="70" fill="#fde047">×</text>
+        <text x="48" y="122" fill="#fde047">÷</text><text x="102" y="122">−</text>
+      </g>
+    </g>`;
   document.getElementById('art').innerHTML = `
-  <svg width="520" height="500" viewBox="0 0 520 500" xmlns="http://www.w3.org/2000/svg">
+  <svg width="1024" height="500" viewBox="0 0 1024 500" xmlns="http://www.w3.org/2000/svg">
     ${A.defs}
-    <g transform="translate(172 48) scale(0.95)">${A.board('A+')}</g>
-    <g transform="translate(318 368) scale(0.85)">${A.books}</g>
-    <g transform="translate(176 336) rotate(-10) scale(0.82)">${A.pen}</g>
+    <g transform="translate(16 182) rotate(-6) scale(0.54)">${A.board('A+')}</g>
+    <g transform="translate(862 178) rotate(7) scale(0.95)">${math}</g>
+    <g transform="translate(40 462) rotate(-16) scale(0.62)">${A.pen}</g>
+    <g transform="translate(830 386) scale(0.8)">${A.books}</g>
   </svg>`;
 </script>
 </body></html>

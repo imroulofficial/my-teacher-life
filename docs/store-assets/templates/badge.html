@@ -1,0 +1,34 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>120 Levels badge</title>
+<link rel="stylesheet" href="_fonts.css">
+<style>
+  /* 128x128, fully opaque (no transparent corners): a gold medal on an orange tile. */
+  body { width: 128px; height: 128px; overflow: hidden; background: #ff8a1c; }
+</style></head>
+<body>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" font-family="Fredoka, sans-serif">
+  <defs>
+    <radialGradient id="bg" cx="0.35" cy="0.25" r="0.95"><stop offset="0" stop-color="#ffd23f"/><stop offset="0.55" stop-color="#ff9f1c"/><stop offset="1" stop-color="#f06419"/></radialGradient>
+    <radialGradient id="gold" cx="0.38" cy="0.3" r="0.8"><stop offset="0" stop-color="#fff6b0"/><stop offset="0.45" stop-color="#fcd34d"/><stop offset="1" stop-color="#d97706"/></radialGradient>
+    <linearGradient id="ribbon" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ef3b4d"/><stop offset="1" stop-color="#b3132a"/></linearGradient>
+  </defs>
+  <rect width="128" height="128" fill="url(#bg)"/>
+  <!-- sunburst -->
+  <g opacity="0.22" fill="#fff">
+    <path d="M64 64 L58 0 H70 Z"/><path d="M64 64 L128 58 V70 Z"/><path d="M64 64 L70 128 H58 Z"/><path d="M64 64 L0 70 V58 Z"/>
+    <path d="M64 64 L104 6 L114 14 Z"/><path d="M64 64 L122 104 L114 114 Z"/><path d="M64 64 L24 122 L14 114 Z"/><path d="M64 64 L6 24 L14 14 Z"/>
+  </g>
+  <!-- ribbon tails -->
+  <path d="M40 78 L30 118 L44 110 L52 122 L60 84 Z" fill="url(#ribbon)"/>
+  <path d="M88 78 L98 118 L84 110 L76 122 L68 84 Z" fill="url(#ribbon)"/>
+  <!-- medal -->
+  <circle cx="64" cy="56" r="42" fill="#b45309"/>
+  <circle cx="64" cy="54" r="42" fill="url(#gold)" stroke="#fff7d6" stroke-width="3"/>
+  <circle cx="64" cy="54" r="33" fill="none" stroke="#b45309" stroke-width="2" stroke-dasharray="3 4" opacity="0.6"/>
+  <path d="M64 18 l3.2 6.6 7.2 1 -5.2 5 1.2 7.2 -6.4 -3.4 -6.4 3.4 1.2 -7.2 -5.2 -5 7.2 -1 z" fill="#fff"/>
+  <text x="64" y="70" text-anchor="middle" font-size="34" font-weight="700" fill="#fff" stroke="#b45309" stroke-width="2.5" paint-order="stroke">120</text>
+  <!-- banner -->
+  <path d="M14 82 H114 L106 92 L114 102 H14 L22 92 Z" fill="url(#ribbon)"/>
+  <text x="64" y="97" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" letter-spacing="1.5">LEVELS</text>
+</svg>
+</body></html>
