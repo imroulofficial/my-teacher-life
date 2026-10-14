@@ -13,7 +13,7 @@ export default {
   },
 
   language: {
-    pickerTitle: 'ভাষা নির্বাচন করুন',
+    pickerTitle: 'তোমার ভাষা বেছে নাও',
     pickerSub: 'Choose your language',
     setting: '🌐 ভাষা',
     changed: 'ভাষা বাংলা করা হয়েছে',
@@ -50,13 +50,13 @@ export default {
   engage: {
     streak: '{n} দিনের ধারা',
     dailyBonus: '🌟 দৈনিক বোনাস! +{n} কয়েন',
-    progress: 'আপনি গেমের {pct}% সম্পন্ন করেছেন',
-    correctPct: 'আপনার {pct}% উত্তর সঠিক হয়েছে',
+    progress: 'তুমি গেমের {pct}% শেষ করেছ',
+    correctPct: 'তোমার {pct}% উত্তর সঠিক হয়েছে',
     nearMiss: {
       close: 'একদম কাছে! আর একটি সঠিক উত্তর দরকার।',
       great: 'দুর্দান্ত চেষ্টা! প্রায় হয়ে গেছে।',
       good: 'ভালো চেষ্টা! অনুশীলনে সিদ্ধি আসে।',
-      keep: 'চালিয়ে যান! প্রতিটি শিক্ষক এখান থেকেই শুরু করেন।',
+      keep: 'চালিয়ে যাও! সব শিক্ষকই এখান থেকে শুরু করেন।',
     },
     milestone: '🎉 {n} কয়েন!',
   },
