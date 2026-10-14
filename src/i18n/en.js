@@ -217,6 +217,9 @@ export default {
     cheating: 'Anti-Cheating Radar',
     security: 'Morning Security Scan',
     library: 'Library Book Sorting',
+    attendance: 'Attendance Call',
+    math: 'Blackboard Math',
+    homework: 'Homework Pile',
   },
 
   howTo: {
@@ -262,6 +265,24 @@ export default {
       'After a correct CROSS, fix the red lines: drag (or tap) from the animal to its real home.',
       'Short on time? Use 🤖 Auto-Grade All.',
     ],
+    attendance: [
+      'Your class is waiting for the roll call.',
+      'Tap the students in alphabetical order of their names (A → Z).',
+      'A wrong tap costs a point, so read before you tap!',
+      'Mark everyone present before the bell rings.',
+    ],
+    math: [
+      'A sum is written on the blackboard.',
+      'Tap the right answer out of the four choices.',
+      'Be quick: the chalk timer runs out!',
+      'Later lessons bring × ÷, fractions and percentages.',
+    ],
+    homework: [
+      'Open the next notebook on the pile and check the answers.',
+      '🌟 EXCELLENT: every answer done and all ✔.',
+      '✅ COMPLETE: every answer done, but some ✘.  ⏳ INCOMPLETE: blank answers left.',
+      'Tap the right bin (or drag the notebook onto it) before the bell.',
+    ],
   },
 
   // In-game text, per mini-game
@@ -278,6 +299,28 @@ export default {
     answer: 'Answer:',
     wasCorrect: 'It was correct!',
     correctIs: 'Correct: {word}',
+  },
+  attendance: {
+    label: 'ROLL CALL',
+    order: 'Call the names A → Z',
+    hint: 'Tap the name that comes first in the alphabet',
+    nextClass: '🚪 Next class is here!',
+    bell: '🔔 The bell rang before roll call was done!',
+  },
+  math: {
+    label: 'MATH',
+    fractionOf: '{a}/{b} of {n} = ?',
+    percentOf: '{p}% of {n} = ?',
+    tooSlow: '⏰ Too slow! The chalk ran out.',
+  },
+  homework: {
+    excellent: 'Excellent',
+    complete: 'Complete',
+    incomplete: 'Incomplete',
+    rule: { excellent: 'all ✔', complete: 'some ✘', incomplete: 'blanks' },
+    title: '{subject} Homework',
+    wasActually: 'That one was {bin}',
+    bell: '🔔 The bell rang! The pile is still there.',
   },
   qa: {
     session: 'SESSION',
