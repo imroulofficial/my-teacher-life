@@ -2378,6 +2378,23 @@ input {
   box-shadow: 0 3px 0 #ca8a04, 0 0 12px rgba(250, 204, 21, 0.7);
   animation: pulseSoft 1.8s ease-in-out infinite;
 }
+.map-head { position: sticky; top: 0; z-index: 5; }
+.map-head .top-bar { position: static; }
+.progress-card {
+  padding: 8px 16px 10px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+.progress-text { font-weight: 700; font-size: 17px; color: #92400e; }
+.progress-track { margin: 6px auto 0; max-width: 520px; height: 8px; border-radius: 999px; background: #fde68a; overflow: hidden; }
+.progress-fill {
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f59e0b, #f97316);
+  transition: width 1s ease-out;
+}
 .celebrate {
   position: fixed;
   inset: 0;
@@ -2408,4 +2425,8 @@ input {
 @keyframes celebratePop {
   from { transform: scale(0.3); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+@media (max-height: 640px) {
+  .progress-card { padding: 6px 12px 8px; }
+  .progress-text { font-size: 14px; }
 }

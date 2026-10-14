@@ -50,6 +50,7 @@ export default {
   engage: {
     streak: '{n}-day streak',
     dailyBonus: '🌟 Daily Bonus! +{n} coins',
+    progress: "You've completed {pct}% of the game",
   },
 
   game: {

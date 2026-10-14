@@ -5,6 +5,7 @@ import { go } from '../core/router.js';
 import { CHAPTERS, GAME_INFO, gameForLevel } from '../core/levels.js';
 import { MAX_STORY_LEVEL } from '../core/config.js';
 import { topBar } from './common.js';
+import { progressCard } from '../core/engagement.js';
 import { sfx } from '../core/audio.js';
 import { t, digits } from '../i18n/index.js';
 
@@ -82,7 +83,7 @@ export default {
       ),
     );
 
-    root.append(bar, list);
+    root.append(h('div', { class: 'map-head' }, bar, progressCard()), list);
     // Scroll to the requested/current level.
     const target = Math.min(params.level || s.unlockedLevel, MAX_STORY_LEVEL);
     requestAnimationFrame(() => {

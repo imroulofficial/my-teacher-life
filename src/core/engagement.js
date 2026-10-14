@@ -86,6 +86,30 @@ export function recordLevelPlayed() {
   return DAILY_BONUS;
 }
 
+// ---------------------------------------------------------------- progress
+
+/** Story levels with at least one star, as a whole percentage (rounded down). */
+export function progressInfo() {
+  const stars = getState().stars;
+  let done = 0;
+  for (let l = 1; l <= MAX_STORY_LEVEL; l++) if (stars[l] > 0) done++;
+  return { done, total: MAX_STORY_LEVEL, pct: Math.floor((done / MAX_STORY_LEVEL) * 100) };
+}
+
+export function progressCard() {
+  const { pct } = progressInfo();
+  const fill = h('div', { class: 'progress-fill' });
+  const card = h(
+    'div',
+    { class: 'progress-card' },
+    h('div', { class: 'progress-text' }, t('engage.progress', { pct })),
+    h('div', { class: 'progress-track' }, fill),
+  );
+  // Fill from 0 to the current value once the card is on screen (CSS transition).
+  requestAnimationFrame(() => requestAnimationFrame(() => (fill.style.width = pct + '%')));
+  return card;
+}
+
 // ---------------------------------------------------------------- celebration overlay (non-blocking)
 
 const queue = [];
