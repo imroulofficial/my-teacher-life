@@ -7,6 +7,7 @@ import { showPrivacyOptions, privacyOptionsAvailable } from '../core/ads.js';
 import { APP } from '../core/config.js';
 import { topBar } from './common.js';
 import { ENGAGEMENT_KEYS } from '../core/engagement.js';
+import { currentTheme, applyTheme } from '../core/themes.js';
 import { t, currentLang, setLanguage, LANGUAGES } from '../i18n/index.js';
 
 function toggle(label, key) {
@@ -70,6 +71,12 @@ export default {
       { class: 'settings' },
       languageRow,
       h('div', { class: 'setting-row' }, h('span', {}, t('settings.name')), nameInput),
+      h(
+        'div',
+        { class: 'setting-row' },
+        h('span', { class: 'theme-row-label' }, t('themes.setting'), h('span', { class: 'theme-row-name' }, `${currentTheme().icon} ${currentTheme().name}`)),
+        btn(t('themes.change'), { color: 'purple', size: 'sm', icon: '🎨', cls: 'theme-row-btn', onClick: () => go('themes') }),
+      ),
       toggle(t('settings.sound'), 'sound'),
       toggle(t('settings.vibration'), 'vibration'),
       privacyRow,
@@ -84,6 +91,7 @@ export default {
             const ok = await confirmModal(t('settings.resetTitle'), t('settings.resetText'), t('settings.resetBtn'));
             if (ok) {
               resetState();
+              applyTheme();
               try {
                 ENGAGEMENT_KEYS.forEach((k) => localStorage.removeItem(k));
               } catch (e) {

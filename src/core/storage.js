@@ -20,6 +20,7 @@ const DEFAULT_STATE = () => ({
   },
   goldenStamps: [], // ids of unlocked Golden Stamp designs
   activeStamp: 'classic',
+  theme: 'village', // classroom theme id
   settings: {
     sound: true,
     vibration: true,

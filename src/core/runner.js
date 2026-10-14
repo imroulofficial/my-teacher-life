@@ -8,8 +8,9 @@ import { GAME_INFO, gameForLevel, difficultyFor, roundsFor, baseCoinsFor, levelL
 import { addCoins, levelCoinMultiplier, isBoostActive, boostRemainingMs } from './economy.js';
 import { GAMES } from '../mini-games/index.js';
 import { rewardOfferPanel } from './reward-offer.js';
-import { recordLevelPlayed, nearMiss } from './engagement.js';
+import { recordLevelPlayed, nearMiss, celebrate } from './engagement.js';
 import { recordLevelResult } from './achievements.js';
+import { themesUnlockedBy } from './themes.js';
 import { t, digits, currentLang } from '../i18n/index.js';
 import { go } from './router.js';
 import { MAX_STORY_LEVEL } from './config.js';
@@ -370,6 +371,7 @@ export function runLevel(root, level) {
     }
     saveState();
     recordLevelResult({ passed, correct, wrong, seconds: gameTime, lang: currentLang }); // badges (celebrated after the coins)
+    if (unlockedNew) for (const th of themesUnlockedBy(level)) celebrate({ cls: 'achievement', text: t('themes.unlocked', { icon: th.icon, name: th.name }), ms: 2600, sound: 'star' });
 
     sfx(passed ? 'win' : 'lose');
     if (passed) confetti(stars * 30);

@@ -16,6 +16,25 @@
   --accent: #ff9f1c;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Classroom theme (Village Schoolhouse); other themes override these at the end of the file. */
+  --sky: linear-gradient(180deg, #7dd3fc 0%, #bae6fd 45%, #fde68a 100%);
+  --home-hill: #86efac;
+  --home-sky: linear-gradient(180deg, #38bdf8 0%, #7dd3fc 50%, #bbf7d0 100%);
+  --room: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);
+  --wall: #e0f2fe;
+  --floor: #fcd34d;
+  --wood-a: #d4a373;
+  --wood-b: #c8965f;
+  --board-a: #2f5d4d;
+  --board-b: #1f3d33;
+  --board-frame: #a16207;
+  --board-edge: #713f12;
+  --desk-a: #b45309;
+  --desk-b: #92400e;
+  --desk-edge: #78350f;
+  --exam-desk: #d97706;
+  --tile-a: #cbd5e1;
+  --tile-b: #e2e8f0;
 }
 
 * {
@@ -33,7 +52,7 @@ body {
   -webkit-user-select: none;
   user-select: none;
   color: var(--ink);
-  background: linear-gradient(180deg, #7dd3fc 0%, #bae6fd 45%, #fde68a 100%);
+  background: var(--sky);
   font-family: 'Fredoka', 'Baloo Da 2', system-ui, sans-serif;
 }
 
@@ -273,8 +292,8 @@ input {
   min-height: 100%;
   padding-bottom: 16px;
   background:
-    radial-gradient(circle at 50% 120%, #86efac 0 38%, transparent 38.5%),
-    linear-gradient(180deg, #38bdf8 0%, #7dd3fc 50%, #bbf7d0 100%);
+    radial-gradient(circle at 50% 120%, var(--home-hill) 0 38%, transparent 38.5%),
+    var(--home-sky);
   overflow: hidden;
 }
 .home .top-bar {
@@ -557,7 +576,7 @@ input {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);
+  background: var(--room);
 }
 .game-hud {
   display: flex;
@@ -928,7 +947,7 @@ input {
   padding: 14px;
   background:
     linear-gradient(180deg, transparent 0 70%, rgba(0, 0, 0, 0.06) 70%),
-    repeating-linear-gradient(90deg, #d4a373 0 60px, #c8965f 60px 62px);
+    repeating-linear-gradient(90deg, var(--wood-a) 0 60px, var(--wood-b) 60px 62px);
 }
 .paper-pile {
   position: absolute;
@@ -994,7 +1013,7 @@ input {
   flex-direction: column;
   padding: 10px;
   gap: 10px;
-  background: linear-gradient(180deg, #e0f2fe 0 40%, #fcd34d 40% 100%);
+  background: linear-gradient(180deg, var(--wall) 0 40%, var(--floor) 40% 100%);
 }
 .board-row {
   display: flex;
@@ -1011,10 +1030,10 @@ input {
   border-radius: 14px;
   padding: 10px 14px;
   color: #f8fafc;
-  background: radial-gradient(circle at 30% 20%, #2f5d4d, #1f3d33);
-  border: 8px solid #a16207;
+  background: radial-gradient(circle at 30% 20%, var(--board-a), var(--board-b));
+  border: 8px solid var(--board-frame);
   box-shadow:
-    0 6px 0 #713f12,
+    0 6px 0 var(--board-edge),
     0 10px 18px rgba(0, 0, 0, 0.25);
   font-family: 'Patrick Hand', 'Galada', cursive;
 }
@@ -1088,8 +1107,8 @@ input {
   height: 16px;
   margin-top: -4px;
   border-radius: 6px;
-  background: linear-gradient(180deg, #b45309, #92400e);
-  box-shadow: 0 4px 0 #78350f;
+  background: linear-gradient(180deg, var(--desk-a), var(--desk-b));
+  box-shadow: 0 4px 0 var(--desk-edge);
 }
 .student-name {
   margin-top: 6px;
@@ -1158,7 +1177,7 @@ input {
   flex-direction: column;
   padding: 10px;
   gap: 8px;
-  background: repeating-linear-gradient(45deg, #cbd5e1 0 22px, #e2e8f0 22px 44px);
+  background: repeating-linear-gradient(45deg, var(--tile-a) 0 22px, var(--tile-b) 22px 44px);
 }
 .exam-status {
   text-align: center;
@@ -1241,7 +1260,7 @@ input {
   height: 22px;
   margin-top: -2px;
   border-radius: 6px;
-  background: linear-gradient(180deg, #d97706, #92400e);
+  background: linear-gradient(180deg, var(--exam-desk), var(--desk-b));
   display: flex;
   justify-content: center;
   align-items: center;
@@ -2490,7 +2509,7 @@ input {
   flex-direction: column;
   gap: 8px;
   padding: 10px;
-  background: linear-gradient(180deg, #e0f2fe 0 34%, #fcd34d 34% 100%);
+  background: linear-gradient(180deg, var(--wall) 0 34%, var(--floor) 34% 100%);
 }
 .roll-board { min-height: 0; padding: 8px 12px; }
 .roll-board .chalk-text { font-size: 20px; }
@@ -2561,7 +2580,7 @@ input {
   flex-direction: column;
   justify-content: center;
   padding: 14px;
-  background: linear-gradient(180deg, #e0f2fe 0 70%, #fcd34d 70% 100%);
+  background: linear-gradient(180deg, var(--wall) 0 70%, var(--floor) 70% 100%);
 }
 .math-board { flex: 0 1 auto; min-height: 150px; display: flex; flex-direction: column; justify-content: center; text-align: center; position: relative; }
 .math-counter { position: absolute; top: 8px; right: 12px; font-size: 13px; opacity: 0.6; font-family: 'Fredoka', 'Baloo Da 2', sans-serif; }
@@ -2585,7 +2604,7 @@ input {
   padding: 14px;
   background:
     linear-gradient(180deg, transparent 0 70%, rgba(0, 0, 0, 0.06) 70%),
-    repeating-linear-gradient(90deg, #d4a373 0 60px, #c8965f 60px 62px);
+    repeating-linear-gradient(90deg, var(--wood-a) 0 60px, var(--wood-b) 60px 62px);
 }
 .hw-pile {
   position: absolute;
@@ -2737,4 +2756,150 @@ input {
   .badge-card { padding: 8px 4px 6px; gap: 4px; }
   .badge-icon { font-size: 32px; }
   .badge-lock { top: 22px; }
+}
+
+/* ---------------------------------------------------------------- Classroom themes (unlock at levels 30 / 60 / 90 / 120) */
+[data-theme='city'] {
+  --sky: linear-gradient(180deg, #93c5fd 0%, #dbeafe 45%, #e2e8f0 100%);
+  --home-hill: #cbd5e1;
+  --home-sky: linear-gradient(180deg, #60a5fa 0%, #93c5fd 50%, #e2e8f0 100%);
+  --room: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 100%);
+  --wall: #f1f5f9;
+  --floor: #94a3b8;
+  --wood-a: #d6d3d1;
+  --wood-b: #c4bfb9;
+  --board-a: #475569;
+  --board-b: #283341;
+  --board-frame: #94a3b8;
+  --board-edge: #475569;
+  --desk-a: #94a3b8;
+  --desk-b: #64748b;
+  --desk-edge: #475569;
+  --exam-desk: #a8b5c6;
+  --tile-a: #d1d5db;
+  --tile-b: #f3f4f6;
+}
+[data-theme='english'] {
+  --sky: linear-gradient(180deg, #93c5fd 0%, #e0e7ff 45%, #fecdd3 100%);
+  --home-hill: #fda4af;
+  --home-sky: linear-gradient(180deg, #3b82f6 0%, #93c5fd 50%, #ffe4e6 100%);
+  --room: linear-gradient(180deg, #fff7ed 0%, #fecdd3 100%);
+  --wall: #fefce8;
+  --floor: #fda4af;
+  --wood-a: #b45309;
+  --wood-b: #9a3412;
+  --board-a: #1e3a8a;
+  --board-b: #172554;
+  --board-frame: #b45309;
+  --board-edge: #7c2d12;
+  --desk-a: #9f1239;
+  --desk-b: #7f1d1d;
+  --desk-edge: #4c0519;
+  --exam-desk: #be123c;
+  --tile-a: #fecdd3;
+  --tile-b: #fff1f2;
+}
+[data-theme='international'] {
+  --sky: linear-gradient(180deg, #67e8f9 0%, #cffafe 45%, #ccfbf1 100%);
+  --home-hill: #5eead4;
+  --home-sky: linear-gradient(180deg, #06b6d4 0%, #67e8f9 50%, #ccfbf1 100%);
+  --room: linear-gradient(180deg, #f0fdfa 0%, #99f6e4 100%);
+  --wall: #ecfeff;
+  --floor: #5eead4;
+  --wood-a: #e7d3b1;
+  --wood-b: #d9c09a;
+  --board-a: #1f2937;
+  --board-b: #030712;
+  --board-frame: #0d9488;
+  --board-edge: #115e59;
+  --desk-a: #e2e8f0;
+  --desk-b: #94a3b8;
+  --desk-edge: #64748b;
+  --exam-desk: #f1f5f9;
+  --tile-a: #ccfbf1;
+  --tile-b: #f0fdfa;
+}
+[data-theme='gifted'] {
+  --sky: linear-gradient(180deg, #c4b5fd 0%, #ede9fe 45%, #fde68a 100%);
+  --home-hill: #c4b5fd;
+  --home-sky: linear-gradient(180deg, #7c3aed 0%, #a78bfa 50%, #fae8ff 100%);
+  --room: linear-gradient(180deg, #faf5ff 0%, #e9d5ff 100%);
+  --wall: #f5f3ff;
+  --floor: #c4b5fd;
+  --wood-a: #7c4a2d;
+  --wood-b: #6b3e25;
+  --board-a: #4c1d95;
+  --board-b: #1e0336;
+  --board-frame: #ca8a04;
+  --board-edge: #854d0e;
+  --desk-a: #6b21a8;
+  --desk-b: #4c1d95;
+  --desk-edge: #3b0764;
+  --exam-desk: #7e22ce;
+  --tile-a: #ddd6fe;
+  --tile-b: #f5f3ff;
+}
+
+/* ---------------------------------------------------------------- Theme picker */
+.themes { padding: 12px 12px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.theme-preview-wrap { width: min(100%, 420px); }
+.theme-preview { border-radius: 22px; overflow: hidden; box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12), 0 10px 20px rgba(0, 0, 0, 0.12); }
+.theme-preview-sky {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 14px;
+  background: radial-gradient(70% 60% at 50% 125%, var(--home-hill) 0 70%, transparent 71%), var(--home-sky);
+}
+.theme-preview-icon { font-size: 28px; }
+.theme-preview-room { padding: 10px; background: linear-gradient(180deg, var(--wall) 0 45%, var(--floor) 45% 100%); }
+.theme-preview-board { min-height: 0; padding: 6px 12px; text-align: center; border-width: 6px; }
+.theme-preview-kids { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+.theme-preview-kid { display: flex; flex-direction: column; align-items: center; }
+.theme-preview-kid .student-face { font-size: 30px; }
+.theme-selected-name { font-weight: 700; font-size: 20px; }
+.theme-list { width: min(100%, 420px); display: flex; flex-direction: column; gap: 8px; }
+.theme-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px 8px 8px;
+  border: none;
+  border-radius: 18px;
+  background: #fff;
+  font-family: inherit;
+  text-align: left;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+}
+.theme-card.selected { box-shadow: 0 0 0 3px #8b5cf6, 0 4px 0 rgba(0, 0, 0, 0.1); }
+.theme-card.locked { opacity: 0.6; }
+.theme-swatch {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  background:
+    linear-gradient(180deg, transparent 0 55%, var(--desk-a) 55% 70%, var(--floor) 70%),
+    radial-gradient(circle at 30% 20%, var(--board-a), var(--board-b));
+  border: 3px solid var(--board-frame);
+}
+.theme-card.locked .theme-swatch { filter: grayscale(0.8); }
+.theme-card-name { font-weight: 700; font-size: 16px; }
+.theme-card-desc { font-size: 13px; opacity: 0.75; line-height: 1.2; }
+.theme-card-tag { position: absolute; top: 8px; right: 12px; font-weight: 700; color: #16a34a; font-size: 18px; }
+.theme-row-label { display: flex; flex-direction: column; min-width: 0; }
+.theme-row-name { font-size: 13px; opacity: 0.75; }
+.theme-row-btn { flex-shrink: 0; }
+@media (max-height: 640px) {
+  .themes { gap: 8px; padding-top: 8px; }
+  .theme-preview-sky { height: 34px; }
+  .theme-preview-kid .student-face { font-size: 24px; }
+  .theme-card { padding: 6px 10px 6px 6px; }
+  .theme-swatch { width: 44px; height: 44px; font-size: 22px; }
 }

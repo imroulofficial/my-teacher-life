@@ -19,6 +19,7 @@ import { h, modal, toast, fmt, fmtDuration, confetti, closeTopModal } from './co
 import { computeOfflineEarnings, touchLastSeen, addCoins } from './core/economy.js';
 import { initEngagement } from './core/engagement.js';
 import { checkAchievements } from './core/achievements.js';
+import { applyTheme } from './core/themes.js';
 import { registerScreen, go, handleBack, refresh, currentScreen } from './core/router.js';
 import { t, setLanguage, hasChosenLanguage, onLanguageChange, LANGUAGES } from './i18n/index.js';
 
@@ -30,6 +31,7 @@ import school from './screens/school.js';
 import collection from './screens/collection.js';
 import settings from './screens/settings.js';
 import achievements from './screens/achievements.js';
+import themes from './screens/themes.js';
 
 registerScreen('home', home);
 registerScreen('map', map);
@@ -39,6 +41,7 @@ registerScreen('school', school);
 registerScreen('collection', collection);
 registerScreen('settings', settings);
 registerScreen('achievements', achievements);
+registerScreen('themes', themes);
 
 // ---------------------------------------------------------------------------
 // Offline earnings (rewarded_offline_double)
@@ -183,6 +186,7 @@ onLanguageChange(() => {
 
 async function boot() {
   loadState();
+  applyTheme();
   initEngagement();
   checkAchievements({ quiet: true }); // badges already earned before this version
   unlockAudioOnFirstTouch();
