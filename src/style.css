@@ -2637,3 +2637,46 @@ input {
   .nb-row { height: 24px; font-size: 16px; }
   .notebook { background: linear-gradient(90deg, transparent 24px, #fca5a5 24px 26px, transparent 26px), repeating-linear-gradient(180deg, #fffdf5 0 23px, #bfdbfe 23px 24px); }
 }
+
+/* ---------------------------------------------------------------- Boss levels */
+.level-node.boss-node {
+  border-radius: 30%;
+  box-shadow: 0 0 0 3px #facc15, 0 4px 0 rgba(0, 0, 0, 0.25), inset 0 -4px 0 rgba(0, 0, 0, 0.15);
+}
+.level-node.boss-node.locked { background: linear-gradient(160deg, #fecdd3, #fda4af); color: #9f1239; }
+.node-badge { position: absolute; top: -6px; right: -6px; font-size: 18px; filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.3)); }
+.boss-stages { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 4px; }
+.boss-stage-chip {
+  padding: 6px 12px;
+  border-radius: 14px;
+  background: #fff1f2;
+  border: 2px solid #fecdd3;
+  font-weight: 700;
+  text-align: left;
+}
+.game-wrap.is-boss .game-hud { box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15), inset 0 -3px 0 #facc15; }
+.boss-banner {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #fff;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 85%, #000), color-mix(in srgb, var(--accent) 55%, #000));
+  animation: popIn 0.3s both;
+  text-align: center;
+  padding: 16px;
+}
+.boss-banner-step { font-size: 16px; font-weight: 700; letter-spacing: 1px; opacity: 0.85; }
+.boss-banner-icon { font-size: 72px; animation: bob 1.2s ease-in-out infinite; }
+.boss-banner-game { font-size: 26px; font-weight: 700; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.3); }
+.boss-failed-stage { margin-top: 8px; font-weight: 700; color: #b45309; }
+.boss-badge-line { margin-top: 6px; font-weight: 700; font-size: 18px; color: #b45309; }
+@media (max-height: 640px) {
+  .result-card .chapter-done { font-size: 15px; margin-top: 4px; }
+  .result-card .boss-badge-line { font-size: 15px; margin-top: 2px; }
+  .result-card .boss-failed-stage { font-size: 14px; margin-top: 4px; }
+}

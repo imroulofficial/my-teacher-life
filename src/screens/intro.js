@@ -2,9 +2,9 @@
 import { h, btn } from '../core/ui.js';
 import { getState, saveState } from '../core/storage.js';
 import { go } from '../core/router.js';
-import { GAME_INFO, gameForLevel, chapterOf, levelLabel, roundsFor } from '../core/levels.js';
+import { GAME_INFO, gameForLevel, chapterOf, levelLabel, roundsFor, bossStages } from '../core/levels.js';
 import { topBar } from './common.js';
-import { t } from '../i18n/index.js';
+import { t, digits } from '../i18n/index.js';
 
 export default {
   render(root, { level }) {
@@ -15,6 +15,7 @@ export default {
     const ch = chapterOf(level);
     const isNew = !s.tutorialsSeen[gameId];
     const best = s.stars[level] || 0;
+    const stages = bossStages(level);
     const bar = topBar({ title: levelLabel(level), onBack: () => go('map', { level }) });
 
     const card = h(
@@ -25,6 +26,13 @@ export default {
       h('div', { class: 'intro-title' }, info.name),
       isNew ? h('div', { class: 'new-badge' }, t('level.newLesson')) : null,
       h('div', { class: 'intro-meta' }, t('level.meta', { n: roundsFor(level, gameId), stars: '★'.repeat(best) + '☆'.repeat(3 - best) })),
+      stages
+        ? h(
+            'div',
+            { class: 'boss-stages' },
+            stages.map((g, i) => h('div', { class: 'boss-stage-chip' }, `${digits(i + 1)}. ${GAME_INFO[g].icon} ${GAME_INFO[g].name}`)),
+          )
+        : null,
       h('div', { class: 'howto-title' }, t('level.howToTitle')),
       h(
         'ol',

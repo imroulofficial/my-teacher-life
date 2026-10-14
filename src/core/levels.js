@@ -13,7 +13,23 @@ export const GAME_INFO = {
   attendance: { get name() { return t('games.attendance'); }, icon: '🙋', color: '#22a06b' },
   math: { get name() { return t('games.math'); }, icon: '🧮', color: '#2563eb' },
   homework: { get name() { return t('games.homework'); }, icon: '📒', color: '#e76f51' },
+  boss: { get name() { return t('games.boss'); }, icon: '👑', color: '#e11d48' },
 };
+
+/** Boss levels: the chapter finales from level 60 on play 2-3 lessons back to back. */
+export const BOSS_STAGES = {
+  60: ['cheating', 'spelling', 'qa'],
+  70: ['attendance', 'stamp', 'spelling'],
+  80: ['math', 'attendance', 'qa'],
+  90: ['homework', 'math', 'security'],
+  100: ['attendance', 'homework', 'match'],
+  110: ['math', 'library', 'cheating'],
+  120: ['attendance', 'math', 'homework'],
+};
+export const BOSS_COIN_MULTIPLIER = 5;
+
+export const isBoss = (level) => !!BOSS_STAGES[level];
+export const bossStages = (level) => BOSS_STAGES[level] || null;
 
 export const CHAPTERS = [
   {
@@ -66,7 +82,7 @@ export const CHAPTERS = [
     intro: [],
     pool: ['library', 'security', 'cheating', 'stamp', 'match', 'qa', 'spelling'],
   },
-  // Chapters 6-12: harder remixes, the three new lessons, and a finale on every 10th level.
+  // Chapters 6-12: harder remixes and the three new lessons; every 10th level is a boss (BOSS_STAGES).
   {
     id: 6,
     get name() { return t(`chapters.${this.id}`); },
@@ -76,7 +92,6 @@ export const CHAPTERS = [
     to: 60,
     intro: [],
     pool: ['spelling', 'cheating', 'qa', 'stamp', 'match', 'security', 'library', 'qa', 'spelling'],
-    finale: 'stamp',
   },
   {
     id: 7,
@@ -87,7 +102,6 @@ export const CHAPTERS = [
     to: 70,
     intro: ['attendance'],
     pool: ['stamp', 'attendance', 'spelling', 'security', 'attendance', 'qa', 'cheating', 'match'],
-    finale: 'attendance',
   },
   {
     id: 8,
@@ -98,7 +112,6 @@ export const CHAPTERS = [
     to: 80,
     intro: ['math'],
     pool: ['attendance', 'math', 'library', 'stamp', 'math', 'spelling', 'attendance', 'qa'],
-    finale: 'math',
   },
   {
     id: 9,
@@ -109,7 +122,6 @@ export const CHAPTERS = [
     to: 90,
     intro: ['homework'],
     pool: ['math', 'homework', 'security', 'attendance', 'homework', 'match', 'math', 'cheating'],
-    finale: 'homework',
   },
   {
     id: 10,
@@ -120,7 +132,6 @@ export const CHAPTERS = [
     to: 100,
     intro: [],
     pool: ['attendance', 'math', 'homework', 'spelling', 'qa', 'stamp', 'library', 'security', 'match'],
-    finale: 'math',
   },
   {
     id: 11,
@@ -131,7 +142,6 @@ export const CHAPTERS = [
     to: 110,
     intro: [],
     pool: ['homework', 'cheating', 'math', 'attendance', 'match', 'spelling', 'homework', 'qa', 'library'],
-    finale: 'homework',
   },
   {
     id: 12,
@@ -142,7 +152,6 @@ export const CHAPTERS = [
     to: MAX_STORY_LEVEL,
     intro: [],
     pool: ['math', 'attendance', 'homework', 'security', 'stamp', 'cheating', 'math', 'homework', 'attendance'],
-    finale: 'attendance',
   },
 ];
 
@@ -158,11 +167,11 @@ export function chapterOf(level) {
 export function gameForLevel(level) {
   const ch = chapterOf(level);
   if (!ch) {
-    const all = Object.keys(GAME_INFO);
+    const all = Object.keys(GAME_INFO).filter((g) => g !== 'boss');
     // simple deterministic hash so the same endless level is always the same game
     return all[(level * 7 + 3) % all.length];
   }
-  if (ch.finale && level === ch.to) return ch.finale;
+  if (isBoss(level)) return 'boss';
   const idx = level - ch.from;
   if (idx < ch.intro.length) return ch.intro[idx];
   return ch.pool[(idx - ch.intro.length) % ch.pool.length];
@@ -181,6 +190,7 @@ export function difficultyFor(level, game) {
 
 /** Number of tasks (papers, questions, students…) in a level. */
 export function roundsFor(level, game) {
+  if (game === 'boss') return bossStages(level).reduce((n, g) => n + bossRounds(level, g), 0);
   const d = difficultyFor(level, game);
   // attendance: two classes of 5-12 students each
   const base = { spelling: 6, qa: 5, match: 4, stamp: 6, cheating: 5, security: 6, library: 6, attendance: 10, math: 6, homework: 6 }[game] || 5;
@@ -189,6 +199,11 @@ export function roundsFor(level, game) {
   const later = NEW_GAME_START[game] || level <= FIRST_STORY_END ? 0 : Math.min(2, Math.floor((level - 51) / 30));
   const endless = level > MAX_STORY_LEVEL ? Math.min(2, Math.floor((level - MAX_STORY_LEVEL) / 20)) : 0;
   return base + Math.round(extra * d) + later + (game === 'attendance' ? 0 : endless);
+}
+
+/** Each boss stage is 40% of a normal level of that lesson, so a whole boss takes about 60-90 seconds. */
+export function bossRounds(level, game) {
+  return Math.max(3, Math.round(roundsFor(level, game) * 0.4));
 }
 
 export function baseCoinsFor(level) {

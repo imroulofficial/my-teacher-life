@@ -227,6 +227,7 @@ export default {
     attendance: 'Attendance Call',
     math: 'Blackboard Math',
     homework: 'Homework Pile',
+    boss: 'Boss Level',
   },
 
   howTo: {
@@ -272,6 +273,12 @@ export default {
       'After a correct CROSS, fix the red lines: drag (or tap) from the animal to its real home.',
       'Short on time? Use 🤖 Auto-Grade All.',
     ],
+    boss: [
+      'A boss level is a full school day: lessons back to back.',
+      'Each lesson starts right after the last one. No breaks!',
+      'Get at least half of every lesson right. Miss one and the boss starts over.',
+      'Win to earn 5x coins and a 🏅 boss badge.',
+    ],
     attendance: [
       'Your class is waiting for the roll call.',
       'Tap the students in alphabetical order of their names (A → Z).',
@@ -306,6 +313,12 @@ export default {
     answer: 'Answer:',
     wasCorrect: 'It was correct!',
     correctIs: 'Correct: {word}',
+  },
+  boss: {
+    stage: 'Lesson {n} of {total}',
+    failedStage: 'Lesson {n} of {total} ({name}) needed at least half right.',
+    badge: '🏅 Boss badge earned!  {mult}x coins',
+    complete: '👑 {level} defeated!',
   },
   attendance: {
     label: 'ROLL CALL',

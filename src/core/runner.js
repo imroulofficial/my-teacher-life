@@ -1,9 +1,10 @@
-// Runs one level of a mini-game: HUD, pause, game clock, power-ups and results.
+// Runs one level: HUD, pause, game clock, power-ups and results.
+// Boss levels run 2-3 mini-games back to back as stages; failing any stage fails the boss.
 import { h, btn, modal, toast, confetti, floatAtEl, flashMark, fmt, clearChildren } from './ui.js';
 import { sfx, vibrate } from './audio.js';
 import { getState, saveState } from './storage.js';
 import { showRewardedAd } from './ads.js';
-import { GAME_INFO, gameForLevel, difficultyFor, roundsFor, baseCoinsFor, levelLabel, chapterOf } from './levels.js';
+import { GAME_INFO, gameForLevel, difficultyFor, roundsFor, baseCoinsFor, levelLabel, chapterOf, bossStages, bossRounds, BOSS_COIN_MULTIPLIER } from './levels.js';
 import { addCoins, levelCoinMultiplier, isBoostActive, boostRemainingMs } from './economy.js';
 import { GAMES } from '../mini-games/index.js';
 import { rewardOfferPanel } from './reward-offer.js';
@@ -25,16 +26,20 @@ export function starsFor(acc) {
  */
 export function runLevel(root, level) {
   const gameId = gameForLevel(level);
-  const game = GAMES[gameId];
-  const info = GAME_INFO[gameId];
-  const difficulty = difficultyFor(level, gameId);
-  const rounds = roundsFor(level, gameId);
+  const stages = bossStages(level) || [gameId];
+  const boss = gameId === 'boss';
+  let stageIdx = 0;
+  let stageGame = stages[0];
+  let info = GAME_INFO[stageGame];
+  let difficulty = difficultyFor(level, stageGame);
+  let rounds = boss ? bossRounds(level, stageGame) : roundsFor(level, stageGame);
 
   // ---------------------------------------------------------------- layout
   const pauseBtn = h('button', { class: 'hud-icon-btn', 'aria-label': 'Pause' }, '⏸');
   const progressFill = h('div', { class: 'hud-progress-fill' });
   const progressText = h('div', { class: 'hud-progress-text' }, `0 / ${rounds}`);
   const scoreEl = h('div', { class: 'hud-score' }, '✔ 0');
+  const hudTitle = h('div', { class: 'hud-title' });
   const boostEl = h('div', { class: 'hud-boost hidden' }, '✨x2');
   const hud = h(
     'div',
@@ -43,7 +48,7 @@ export function runLevel(root, level) {
     h(
       'div',
       { class: 'hud-center' },
-      h('div', { class: 'hud-title' }, `${info.icon} ${levelLabel(level)} · ${info.name}`),
+      hudTitle,
       h('div', { class: 'hud-progress' }, progressFill, progressText),
     ),
     h('div', { class: 'hud-right' }, scoreEl, boostEl),
@@ -53,8 +58,16 @@ export function runLevel(root, level) {
   const stage = h('div', { class: 'game-stage' });
   const powerups = h('div', { class: 'game-powerups' });
   const controls = h('div', { class: 'game-controls' });
-  const wrap = h('div', { class: 'game-wrap', style: { '--accent': info.color } }, hud, timerBar, stage, powerups, controls);
+  const wrap = h('div', { class: `game-wrap ${boss ? 'is-boss' : ''}` }, hud, timerBar, stage, powerups, controls);
   root.appendChild(wrap);
+
+  function applyStageLook() {
+    wrap.style.setProperty('--accent', info.color);
+    hudTitle.textContent = boss
+      ? `👑 ${levelLabel(level)} · ${digits(`${stageIdx + 1}/${stages.length}`)} ${info.icon} ${info.name}`
+      : `${info.icon} ${levelLabel(level)} · ${info.name}`;
+  }
+  applyStageLook();
 
   // ------------------------------------------------------------ game clock
   let alive = true;
@@ -111,8 +124,10 @@ export function runLevel(root, level) {
   rafId = requestAnimationFrame(loop);
 
   // ------------------------------------------------------------ results
-  let correct = 0;
+  let correct = 0; // whole level (all boss stages)
   let wrong = 0;
+  let stageCorrect = 0; // current boss stage
+  let stageWrong = 0;
   let done = 0;
   let bonusCoins = 0;
 
@@ -126,8 +141,12 @@ export function runLevel(root, level) {
 
   const api = {
     level,
-    difficulty,
-    rounds,
+    get difficulty() {
+      return difficulty;
+    },
+    get rounds() {
+      return rounds;
+    },
     stage,
     controls,
     powerups,
@@ -138,10 +157,10 @@ export function runLevel(root, level) {
       return paused || adPaused;
     },
     get correctCount() {
-      return correct;
+      return stageCorrect;
     },
     get wrongCount() {
-      return wrong;
+      return stageWrong;
     },
     get doneCount() {
       return done;
@@ -150,6 +169,7 @@ export function runLevel(root, level) {
     correct(el, { countsAsRound = true, silent = false } = {}) {
       if (!api.alive) return;
       correct++;
+      stageCorrect++;
       if (countsAsRound) done++;
       if (!silent) {
         sfx('correct');
@@ -161,6 +181,7 @@ export function runLevel(root, level) {
     wrong(el, { countsAsRound = true, silent = false } = {}) {
       if (!api.alive) return;
       wrong++;
+      stageWrong++;
       if (countsAsRound) done++;
       if (!silent) {
         sfx('wrong');
@@ -253,9 +274,21 @@ export function runLevel(root, level) {
     },
     toast,
     sfx,
-    /** Ends the level and shows results. */
+    /** Ends the level (or the current boss stage) and shows results. */
     finish() {
       if (ended || !alive) return;
+      if (boss) {
+        const n = stageCorrect + stageWrong;
+        if (starsFor(n ? stageCorrect / n : 0) === 0) {
+          ended = true;
+          showResults({ failedStage: stageIdx });
+          return;
+        }
+        if (stageIdx < stages.length - 1) {
+          nextStage();
+          return;
+        }
+      }
       ended = true;
       showResults();
     },
@@ -313,14 +346,17 @@ export function runLevel(root, level) {
   });
 
   // ------------------------------------------------------------ results
-  function showResults() {
+  function showResults({ failedStage = -1 } = {}) {
     const total = correct + wrong;
     const acc = total === 0 ? 0 : correct / total;
-    const stars = starsFor(acc);
+    // A boss is only won when every stage passed (each stage needs 50%+, so the total does too).
+    const stars = failedStage >= 0 ? 0 : starsFor(acc);
     const s = getState();
     const passed = stars > 0;
+    const bossWon = boss && passed;
     const starMult = [0.25, 1, 1.25, 1.6][stars];
-    const coins = Math.round(baseCoinsFor(level) * (0.5 + 0.5 * acc) * starMult * levelCoinMultiplier()) + bonusCoins;
+    const coins = Math.round(baseCoinsFor(level) * (0.5 + 0.5 * acc) * starMult * levelCoinMultiplier() * (bossWon ? BOSS_COIN_MULTIPLIER : 1)) + bonusCoins;
+    if (bossWon) s.bossWins[level] = true;
     recordLevelPlayed(); // daily streak + once-a-day bonus
     addCoins(coins);
     s.stats.levelsPlayed++;
@@ -348,8 +384,12 @@ export function runLevel(root, level) {
       'div',
       { class: 'text-center' },
       starRow,
-      passed ? h('div', { class: 'text-2xl font-bold mt-2' }, t('game.praise')[stars]) : nearMiss(correct, wrong),
+      passed ? h('div', { class: 'text-2xl font-bold mt-2' }, t('game.praise')[stars]) : null,
+      failedStage >= 0 ? h('div', { class: 'boss-failed-stage' }, t('boss.failedStage', { n: failedStage + 1, total: stages.length, name: info.name })) : null,
+      // Near-miss encouragement uses the stage that was lost on a boss level.
+      passed ? null : boss ? nearMiss(stageCorrect, stageWrong) : nearMiss(correct, wrong),
       passed ? h('div', { class: 'mt-1 opacity-80' }, t('game.accuracy', { pct: Math.round(acc * 100), ok: correct, bad: wrong })) : null,
+      bossWon ? h('div', { class: 'boss-badge-line' }, t('boss.badge', { mult: BOSS_COIN_MULTIPLIER })) : null,
       coinsEl,
       isBoostActive() ? h('div', { class: 'text-sm text-amber-600 font-bold' }, t('game.boostActive', { m: Math.ceil(boostRemainingMs() / 60000) })) : null,
       chapterDone ? h('div', { class: 'chapter-done' }, t('game.chapterDone', { name: chapterOf(level).name })) : null,
@@ -358,21 +398,81 @@ export function runLevel(root, level) {
     const buttons = [{ label: t('game.map'), color: 'gray', icon: '🗺️', onClick: () => go('map', { level }) }];
     buttons.push({ label: t('game.retry'), color: 'blue', icon: '↻', onClick: () => go('game', { level }) });
     if (passed) buttons.push({ label: t('game.next'), color: 'green', icon: '▶', onClick: () => go('intro', { level: level + 1 }) });
-    const resultModal = modal({ title: passed ? t('game.complete', { level: levelLabel(level) }) : t('game.failed'), body, buttons, dismissable: false, cls: 'result-card' });
+    const title = bossWon ? t('boss.complete', { level: levelLabel(level) }) : passed ? t('game.complete', { level: levelLabel(level) }) : t('game.failed');
+    const resultModal = modal({ title, body, buttons, dismissable: false, cls: 'result-card' });
     // Opt-in rewarded video offer, below the level buttons (wins only; buttons stay usable).
     const offer = passed ? rewardOfferPanel({ level, coins, coinsEl }) : null;
     if (offer) resultModal.el.querySelector('.modal-card').appendChild(offer);
   }
 
-  // ------------------------------------------------------------ start game
+  // ------------------------------------------------------------ start game / boss stages
   let instance = null;
-  try {
-    instance = game.start(api);
-  } catch (e) {
-    console.error('Game failed to start', e);
-    toast(t('game.couldNotStart'), 'error');
+
+  function startStage() {
+    try {
+      instance = GAMES[stageGame].start(api);
+    } catch (e) {
+      console.error('Game failed to start', e);
+      toast(t('game.couldNotStart'), 'error');
+    }
+    updateHud();
   }
-  updateHud();
+
+  function destroyInstance() {
+    if (instance && instance.destroy) {
+      try {
+        instance.destroy();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    instance = null;
+  }
+
+  /** Boss levels: a short banner, then the next lesson starts straight away (no menus in between). */
+  function stageBanner(then) {
+    const banner = h(
+      'div',
+      { class: 'boss-banner' },
+      h('div', { class: 'boss-banner-step' }, t('boss.stage', { n: stageIdx + 1, total: stages.length })),
+      h('div', { class: 'boss-banner-icon' }, info.icon),
+      h('div', { class: 'boss-banner-game' }, info.name),
+    );
+    stage.appendChild(banner);
+    sfx('whoosh');
+    api.after(1.3, () => {
+      banner.remove();
+      then();
+    });
+  }
+
+  function nextStage() {
+    destroyInstance();
+    scheduled.clear();
+    frameFns.clear();
+    pauseFns.clear();
+    levelTimer = null;
+    timerBar.classList.add('hidden');
+    clearChildren(stage);
+    clearChildren(controls);
+    clearChildren(powerups);
+    stageIdx++;
+    stageGame = stages[stageIdx];
+    info = GAME_INFO[stageGame];
+    difficulty = difficultyFor(level, stageGame);
+    rounds = bossRounds(level, stageGame);
+    stageCorrect = 0;
+    stageWrong = 0;
+    done = 0;
+    applyStageLook();
+    updateHud();
+    stageBanner(startStage);
+  }
+
+  if (boss) {
+    updateHud();
+    stageBanner(startStage);
+  } else startStage();
 
   const cleanup = () => {
     alive = false;
@@ -383,13 +483,7 @@ export function runLevel(root, level) {
     window.removeEventListener('mtl:ad-open', onAdOpen);
     window.removeEventListener('mtl:ad-close', onAdClose);
     document.removeEventListener('visibilitychange', onVisibility);
-    if (instance && instance.destroy) {
-      try {
-        instance.destroy();
-      } catch (e) {
-        console.error(e);
-      }
-    }
+    destroyInstance();
   };
   cleanup.openPause = openPause;
   cleanup.isEnded = () => ended;

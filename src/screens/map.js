@@ -14,10 +14,12 @@ function levelNode(level, s) {
   const stars = s.stars[level] || 0;
   const game = GAME_INFO[gameForLevel(level)];
   const current = level === s.unlockedLevel;
+  const boss = gameForLevel(level) === 'boss';
   const node = h(
     'button',
-    { class: `level-node ${unlocked ? 'unlocked' : 'locked'} ${current ? 'current' : ''}`, style: unlocked ? { '--node': game.color } : {}, dataset: { level } },
-    h('span', { class: 'node-icon' }, unlocked ? game.icon : '🔒'),
+    { class: `level-node ${unlocked ? 'unlocked' : 'locked'} ${current ? 'current' : ''} ${boss ? 'boss-node' : ''}`, style: unlocked ? { '--node': game.color } : {}, dataset: { level } },
+    s.bossWins[level] ? h('span', { class: 'node-badge' }, '🏅') : null,
+    h('span', { class: 'node-icon' }, unlocked || boss ? game.icon : '🔒'),
     h('span', { class: 'node-num' }, digits(level)),
     h('span', { class: 'node-stars' }, unlocked ? [0, 1, 2].map((i) => h('span', { class: i < stars ? 'on' : '' }, '★')) : ''),
   );

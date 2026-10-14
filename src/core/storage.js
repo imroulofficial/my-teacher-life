@@ -8,6 +8,7 @@ const DEFAULT_STATE = () => ({
   totalCoinsEarned: 0,
   unlockedLevel: 1, // highest level the player may start
   stars: {}, // { [level]: 0..3 }
+  bossWins: {}, // { [level]: true } boss levels won (🏅 badge)
   best: {}, // { [level]: best score }
   school: {
     size: 0, // index into SCHOOL_SIZES
