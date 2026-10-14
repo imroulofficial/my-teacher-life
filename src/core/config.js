@@ -47,4 +47,4 @@ export const BOOSTS = {
   xraySeconds: 10, // Scanner VIP X-ray duration
 };
 
-export const MAX_STORY_LEVEL = 50;
+export const MAX_STORY_LEVEL = 120;

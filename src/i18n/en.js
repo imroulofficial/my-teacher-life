@@ -202,11 +202,18 @@ export default {
   },
 
   chapters: {
-    1: 'First Day of School',
-    2: 'Exam Season',
-    3: 'Safety Week',
-    4: 'Library Week',
-    5: "Principal's Challenge",
+    1: 'New Teacher',
+    2: 'Assistant Teacher',
+    3: 'Senior Teacher',
+    4: 'Head of Department',
+    5: 'Head Teacher',
+    6: 'School Principal',
+    7: 'District Inspector',
+    8: 'Education Officer',
+    9: 'Board of Education',
+    10: 'National Commission',
+    11: 'International School',
+    12: 'University of Education',
   },
 
   games: {

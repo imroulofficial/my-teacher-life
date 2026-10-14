@@ -10,6 +10,7 @@ import { rewardOfferPanel } from './reward-offer.js';
 import { recordLevelPlayed, nearMiss } from './engagement.js';
 import { t, digits } from '../i18n/index.js';
 import { go } from './router.js';
+import { MAX_STORY_LEVEL } from './config.js';
 
 export function starsFor(acc) {
   if (acc >= 0.9) return 3;
@@ -26,7 +27,7 @@ export function runLevel(root, level) {
   const gameId = gameForLevel(level);
   const game = GAMES[gameId];
   const info = GAME_INFO[gameId];
-  const difficulty = difficultyFor(level);
+  const difficulty = difficultyFor(level, gameId);
   const rounds = roundsFor(level, gameId);
 
   // ---------------------------------------------------------------- layout
@@ -352,7 +353,7 @@ export function runLevel(root, level) {
       coinsEl,
       isBoostActive() ? h('div', { class: 'text-sm text-amber-600 font-bold' }, t('game.boostActive', { m: Math.ceil(boostRemainingMs() / 60000) })) : null,
       chapterDone ? h('div', { class: 'chapter-done' }, t('game.chapterDone', { name: chapterOf(level).name })) : null,
-      unlockedNew && level + 1 === 51 ? h('div', { class: 'chapter-done' }, t('game.endlessUnlocked')) : null,
+      unlockedNew && level + 1 === MAX_STORY_LEVEL + 1 ? h('div', { class: 'chapter-done' }, t('game.endlessUnlocked')) : null,
     );
     const buttons = [{ label: t('game.map'), color: 'gray', icon: '🗺️', onClick: () => go('map', { level }) }];
     buttons.push({ label: t('game.retry'), color: 'blue', icon: '↻', onClick: () => go('game', { level }) });
