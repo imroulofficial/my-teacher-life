@@ -216,6 +216,30 @@ export default {
     12: 'University of Education',
   },
 
+  chapterDesc: {
+    1: 'Your very first class! Learn to check spellings, run a Q&A and grade line-match homework.',
+    2: 'Exams are here. Keep the hall fair and stamp every result paper.',
+    3: 'Safety first: scan bags at the gate every morning.',
+    4: 'The library needs you. Sort every book onto the right shelf.',
+    5: 'You run the school now. Every lesson you know, mixed together.',
+    6: 'As principal you face your first boss level: a whole school day in one go.',
+    7: 'Inspect schools across the district, starting with the roll call.',
+    8: 'Check the sums! The blackboard is full of maths problems.',
+    9: 'Homework piles up on the Board. Sort the good from the unfinished.',
+    10: 'The national commission tests every skill you have.',
+    11: 'A new school, a new world: harder lessons at an international school.',
+    12: 'The final chapter. Teach the teachers of tomorrow.',
+  },
+  chapterIntro: {
+    levels: 'Levels {from}-{to}',
+    newLesson: '✨ New lesson',
+    newLessons: '✨ New lessons',
+    newBoss: '👑 New: boss levels',
+    mixed: '🔀 All your lessons, mixed and harder',
+    boss: '👑 Boss level at level {n}',
+    tap: 'Tap to continue',
+  },
+
   games: {
     spelling: 'Spelling & Picture Check',
     qa: 'Classroom Q&A',

@@ -20,6 +20,7 @@ import { computeOfflineEarnings, touchLastSeen, addCoins } from './core/economy.
 import { initEngagement } from './core/engagement.js';
 import { checkAchievements } from './core/achievements.js';
 import { applyTheme } from './core/themes.js';
+import { initChapterIntros } from './screens/chapter-intro.js';
 import { registerScreen, go, handleBack, refresh, currentScreen } from './core/router.js';
 import { t, setLanguage, hasChosenLanguage, onLanguageChange, LANGUAGES } from './i18n/index.js';
 
@@ -187,6 +188,7 @@ onLanguageChange(() => {
 async function boot() {
   loadState();
   applyTheme();
+  initChapterIntros();
   initEngagement();
   checkAchievements({ quiet: true }); // badges already earned before this version
   unlockAudioOnFirstTouch();

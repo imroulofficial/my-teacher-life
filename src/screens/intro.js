@@ -4,6 +4,7 @@ import { getState, saveState } from '../core/storage.js';
 import { go } from '../core/router.js';
 import { GAME_INFO, gameForLevel, chapterOf, levelLabel, roundsFor, bossStages } from '../core/levels.js';
 import { topBar } from './common.js';
+import { chapterIntroPending, showChapterIntro } from './chapter-intro.js';
 import { t, digits } from '../i18n/index.js';
 
 export default {
@@ -52,6 +53,8 @@ export default {
       }),
     );
     root.append(bar, h('div', { class: 'intro-wrap' }, card));
+    // First time in this chapter: show the chapter card over the level intro.
+    if (chapterIntroPending(ch)) showChapterIntro(root, ch);
     return () => bar.destroy();
   },
   onBack() {

@@ -2903,3 +2903,57 @@ input {
   .theme-card { padding: 6px 10px 6px 6px; }
   .theme-swatch { width: 44px; height: 44px; font-size: 22px; }
 }
+
+/* ---------------------------------------------------------------- Chapter intro card */
+.ch-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(16px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
+  transition: opacity 0.3s;
+}
+.ch-intro.out { opacity: 0; }
+.ch-intro-card {
+  width: min(100%, 420px);
+  max-height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: 20px 18px 16px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.12), 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+.ch-intro-icon { font-size: 64px; line-height: 1; }
+.ch-intro-num { font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+.ch-intro-title { font-size: 30px; font-weight: 700; line-height: 1.1; color: #c2410c; }
+.ch-intro-range { font-size: 14px; font-weight: 600; opacity: 0.7; }
+.ch-intro-desc { margin: 6px 0; font-size: 17px; line-height: 1.3; }
+.ch-intro-preview { width: 100%; padding: 10px 12px; border-radius: 18px; background: #fff7ed; border: 2px dashed #fdba74; }
+.ch-intro-new { font-weight: 700; color: #9a3412; }
+.ch-intro-games { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 10px; margin: 6px 0; }
+.ch-intro-game { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #fff; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08); font-weight: 700; }
+.ch-intro-game-icon { font-size: 26px; }
+.ch-intro-icons { font-size: 28px; letter-spacing: 4px; margin: 4px 0; }
+.ch-intro-tip { font-size: 14px; opacity: 0.8; line-height: 1.25; }
+.ch-intro-boss { margin-top: 6px; font-weight: 700; color: #be123c; }
+.ch-intro-tap { margin-top: 8px; font-size: 13px; opacity: 0.6; }
+.ch-intro-timer { width: 100%; height: 6px; margin-top: 6px; border-radius: 999px; background: rgba(0, 0, 0, 0.08); overflow: hidden; }
+.ch-intro-timer-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #f97316); animation: chIntroTimer linear forwards; }
+@keyframes chIntroTimer {
+  from { width: 100%; }
+  to { width: 0; }
+}
+@media (max-height: 640px) {
+  .ch-intro-card { padding: 14px 14px 12px; }
+  .ch-intro-icon { font-size: 48px; }
+  .ch-intro-title { font-size: 25px; }
+  .ch-intro-desc { font-size: 15px; margin: 4px 0; }
+  .ch-intro-game-icon { font-size: 22px; }
+}

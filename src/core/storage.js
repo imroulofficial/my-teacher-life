@@ -37,6 +37,8 @@ const DEFAULT_STATE = () => ({
     fastestWin: 0, // seconds, fastest level ever won (0 = none yet)
   },
   tutorialsSeen: {}, // { [gameId]: true }
+  chaptersSeen: {}, // { [chapterId]: true } chapter intro cards already shown
+  chapterIntrosReady: false, // older saves: chapters already reached are marked seen once
   achievements: {}, // { [id]: unlocked timestamp }
   langsPlayed: [], // languages a level was finished in
 });

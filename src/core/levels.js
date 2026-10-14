@@ -10,7 +10,7 @@ export const GAME_INFO = {
   cheating: { get name() { return t('games.cheating'); }, icon: '📡', color: '#ff9f1c' },
   security: { get name() { return t('games.security'); }, icon: '🚨', color: '#f15bb5' },
   library: { get name() { return t('games.library'); }, icon: '📚', color: '#00bbf9' },
-  attendance: { get name() { return t('games.attendance'); }, icon: '🙋', color: '#22a06b' },
+  attendance: { get name() { return t('games.attendance'); }, icon: '📋', color: '#22a06b' },
   math: { get name() { return t('games.math'); }, icon: '🧮', color: '#2563eb' },
   homework: { get name() { return t('games.homework'); }, icon: '📒', color: '#e76f51' },
   boss: { get name() { return t('games.boss'); }, icon: '👑', color: '#e11d48' },
