@@ -9,7 +9,8 @@ import { addCoins, levelCoinMultiplier, isBoostActive, boostRemainingMs } from '
 import { GAMES } from '../mini-games/index.js';
 import { rewardOfferPanel } from './reward-offer.js';
 import { recordLevelPlayed, nearMiss } from './engagement.js';
-import { t, digits } from '../i18n/index.js';
+import { recordLevelResult } from './achievements.js';
+import { t, digits, currentLang } from '../i18n/index.js';
 import { go } from './router.js';
 import { MAX_STORY_LEVEL } from './config.js';
 
@@ -368,6 +369,7 @@ export function runLevel(root, level) {
       unlockedNew = true;
     }
     saveState();
+    recordLevelResult({ passed, correct, wrong, seconds: gameTime, lang: currentLang }); // badges (celebrated after the coins)
 
     sfx(passed ? 'win' : 'lose');
     if (passed) confetti(stars * 30);

@@ -6,6 +6,8 @@ import { incomePerHour, currentSize } from '../core/economy.js';
 import { GAME_INFO, gameForLevel, levelLabel } from '../core/levels.js';
 import { topBar } from './common.js';
 import { streakChip } from '../core/engagement.js';
+import { unlockedCount, ACHIEVEMENTS } from '../core/achievements.js';
+import { sfx } from '../core/audio.js';
 import { APP } from '../core/config.js';
 import { t, digits, currentLang } from '../i18n/index.js';
 
@@ -19,6 +21,15 @@ export default {
     const bar = topBar({ title: '' });
     const streak = streakChip();
     if (streak) bar.lastChild.prepend(streak); // next to the coin balance
+    // Achievements: trophy button in the top-left corner with the unlocked count.
+    bar.firstChild.replaceWith(
+      h(
+        'button',
+        { class: 'hud-icon-btn trophy-btn', 'aria-label': t('achievements.title'), onclick: () => (sfx('tap'), go('achievements')) },
+        '🏆',
+        h('span', { class: 'trophy-count' }, digits(`${unlockedCount()}/${ACHIEVEMENTS.length}`)),
+      ),
+    );
 
     const view = h(
       'div',

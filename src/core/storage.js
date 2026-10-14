@@ -31,8 +31,13 @@ const DEFAULT_STATE = () => ({
     bagsChecked: 0,
     booksSorted: 0,
     adsWatched: 0,
+    dailyBonuses: 0,
+    perfectLevels: 0, // levels finished with every answer right
+    fastestWin: 0, // seconds, fastest level ever won (0 = none yet)
   },
   tutorialsSeen: {}, // { [gameId]: true }
+  achievements: {}, // { [id]: unlocked timestamp }
+  langsPlayed: [], // languages a level was finished in
 });
 
 let state = null;

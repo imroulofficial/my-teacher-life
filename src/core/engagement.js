@@ -80,6 +80,7 @@ export function recordLevelPlayed() {
   const today = localDate();
   if (read(KEY_BONUS, null) === today) return 0;
   write(KEY_BONUS, today);
+  getState().stats.dailyBonuses++;
   // Queue the toast first so a milestone reached by these coins shows after it.
   celebrate({ cls: 'daily-bonus', text: t('engage.dailyBonus', { n: DAILY_BONUS }), ms: 2500, sound: 'coin' });
   addCoins(DAILY_BONUS);
@@ -158,7 +159,8 @@ export function initEngagement() {
 const queue = [];
 let showing = false;
 
-function celebrate(item) {
+/** Queues a short non-blocking celebration (one at a time). */
+export function celebrate(item) {
   queue.push(item);
   if (showing) return;
   showing = true;

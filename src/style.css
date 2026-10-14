@@ -2680,3 +2680,61 @@ input {
   .result-card .boss-badge-line { font-size: 15px; margin-top: 2px; }
   .result-card .boss-failed-stage { font-size: 14px; margin-top: 4px; }
 }
+
+/* ---------------------------------------------------------------- Achievements */
+.trophy-btn { position: relative; background: linear-gradient(180deg, #fde68a, #f59e0b); box-shadow: 0 4px 0 #b45309, inset 0 2px 0 rgba(255, 255, 255, 0.5); }
+.trophy-count {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #fff;
+  color: #92400e;
+  font-size: 10px;
+  line-height: 15px;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.achievements { padding: 12px 12px 24px; display: flex; flex-direction: column; gap: 12px; }
+.badge-summary { border-radius: 20px; }
+.badge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.badge-card {
+  position: relative;
+  border: none;
+  border-radius: 18px;
+  padding: 12px 6px 10px;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+}
+.badge-card.unlocked { background: linear-gradient(180deg, #fffbeb, #fde68a); box-shadow: 0 0 0 3px #f59e0b, 0 4px 0 rgba(180, 83, 9, 0.3); }
+.badge-card.locked .badge-icon { filter: grayscale(1); opacity: 0.35; }
+.badge-icon { font-size: 40px; line-height: 1; }
+.badge-lock { position: absolute; top: 30px; font-size: 20px; }
+.badge-name { font-size: 13px; font-weight: 700; line-height: 1.15; min-height: 30px; display: flex; align-items: center; text-align: center; }
+.badge-big { font-size: 72px; line-height: 1.1; }
+.badge-big.locked { filter: grayscale(1); opacity: 0.4; }
+.badge-desc { margin: 6px 0; font-size: 17px; }
+.badge-status { font-weight: 700; color: #92400e; }
+.badge-status.done { color: #16a34a; }
+.celebrate.achievement { inset: auto; top: calc(52px + var(--safe-top, 0px)); left: 8px; right: 8px; overflow: visible; justify-content: center; }
+.achievement .celebrate-text {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 15px;
+  color: #fff;
+  background: linear-gradient(180deg, #a78bfa, #7c3aed);
+  box-shadow: 0 3px 0 #5b21b6, 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+@media (max-height: 640px) {
+  .badge-grid { gap: 8px; }
+  .badge-card { padding: 8px 4px 6px; gap: 4px; }
+  .badge-icon { font-size: 32px; }
+  .badge-lock { top: 22px; }
+}
