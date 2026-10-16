@@ -10,7 +10,7 @@ import { APP } from '../core/config.js';
 import { topBar } from './common.js';
 import { ENGAGEMENT_KEYS } from '../core/engagement.js';
 import { currentTheme, applyTheme } from '../core/themes.js';
-import { t, currentLang, setLanguage, LANGUAGES } from '../i18n/index.js';
+import { t, digits, currentLang, setLanguage, LANGUAGES } from '../i18n/index.js';
 
 // Public pages (GitHub Pages) and support address.
 const PRIVACY_URL = 'https://imroulofficial.github.io/my-teacher-life/privacy-policy.html';
@@ -67,7 +67,7 @@ async function showAbout() {
       { class: 'about' },
       h('div', { class: 'text-4xl' }, '🖍️'),
       h('div', { class: 'font-bold text-xl' }, APP.name),
-      h('div', {}, t('settings.version', { v: version })),
+      h('div', {}, t('settings.version', { v: digits(version) })),
       h('div', { class: 'about-line' }, t('settings.developer', { studio: APP.studio })),
       h('div', { class: 'about-line' }, t('settings.madeIn')),
       h('a', { class: 'about-mail', href: `mailto:${SUPPORT_EMAIL}` }, SUPPORT_EMAIL),
