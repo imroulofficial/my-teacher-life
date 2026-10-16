@@ -5,6 +5,12 @@ import { h, btn, shuffle } from '../core/ui.js';
 import { qaQuestions, studentNames, STUDENT_FACES, SHIRT_COLORS } from './data.js';
 import { t } from '../i18n/index.js';
 
+/** Speech bubble text; long answers get a smaller font so they fit the seat (wrapping if needed). */
+function setBubble(b, text) {
+  b.textContent = text;
+  b.classList.toggle('long', [...text].length > 8);
+}
+
 export default {
   id: 'qa',
 
@@ -101,7 +107,7 @@ export default {
           st.el.classList.add('raised');
           st.el.querySelector('.hand').classList.remove('hidden');
           const b = st.el.querySelector('.bubble');
-          b.textContent = answers[si];
+          setBubble(b, answers[si]);
           b.classList.remove('hidden', 'faded');
           api.sfx('tap');
         });
@@ -115,7 +121,7 @@ export default {
           raised.forEach((si) => {
             const b = students[si].el.querySelector('.bubble');
             b.classList.add('faded');
-            b.textContent = '💭';
+            setBubble(b, '💭');
           });
         });
       }
@@ -158,7 +164,7 @@ export default {
       // Show every bubble again and highlight the right student.
       raised.forEach((si) => {
         const b = students[si].el.querySelector('.bubble');
-        b.textContent = answers[si];
+        setBubble(b, answers[si]);
         b.classList.remove('faded');
       });
       if (!right && correctIdx >= 0) students[correctIdx].el.classList.add('reveal-correct');

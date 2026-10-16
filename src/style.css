@@ -1132,18 +1132,26 @@ input {
   z-index: 3;
 }
 .bubble {
+  /* Centred on its own student and never wider than the seat, so it can't run off the screen
+     (edge students) or over a neighbour. Long answers wrap upwards onto a second line. */
   position: absolute;
-  top: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 120%;
-  padding: 4px 10px;
+  bottom: calc(100% - 19px);
+  left: 0;
+  right: 0;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 4px 8px;
   background: #fff;
   border-radius: 14px;
   font-weight: 700;
   font-size: 14px;
-  white-space: nowrap;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: break-word;
   box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15);
+  transform-origin: 50% 100%;
   animation: popIn 0.3s both;
   z-index: 4;
 }
@@ -1159,6 +1167,16 @@ input {
 }
 .bubble.faded {
   color: #94a3b8;
+}
+.bubble.long {
+  font-size: 12px;
+  padding: 3px 6px;
+}
+.lang-bn .bubble {
+  font-size: 13px; /* Bangla letters are wider at the same size */
+}
+.lang-bn .bubble.long {
+  font-size: 11.5px;
 }
 .student.happy .student-face {
   animation: jump 0.5s ease-out 2;
