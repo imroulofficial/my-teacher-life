@@ -197,8 +197,16 @@ export default {
     resetText: 'All levels, coins and school upgrades will be erased. This cannot be undone.',
     resetDone: 'Progress reset.',
     version: 'Version {v}',
-    madeBy: 'Made with ❤️ by {studio}',
     offlineNote: 'Plays fully offline. Optional reward videos need an internet connection.',
+    privacyPolicy: '🛡️ Privacy Policy',
+    terms: '📄 Terms of Service',
+    contact: '✉️ Contact Support',
+    about: 'ℹ️ About',
+    aboutTitle: 'About',
+    developer: 'Developer: {studio}',
+    madeIn: 'Made with ❤️ in Bangladesh',
+    rights: '© 2026 {studio}. All rights reserved.',
+    needsInternet: 'This page needs an internet connection.',
   },
 
   chapters: {

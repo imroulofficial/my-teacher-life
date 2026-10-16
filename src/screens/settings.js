@@ -1,5 +1,7 @@
-// Settings: sound, vibration, teacher name, privacy, reset.
-import { h, btn, toast, confirmModal } from '../core/ui.js';
+// Settings: sound, vibration, teacher name, privacy, legal links, reset, about.
+import { Browser } from '@capacitor/browser';
+import { App } from '@capacitor/app';
+import { h, btn, toast, confirmModal, modal } from '../core/ui.js';
 import { getState, saveState, resetState } from '../core/storage.js';
 import { go } from '../core/router.js';
 import { sfx } from '../core/audio.js';
@@ -9,6 +11,72 @@ import { topBar } from './common.js';
 import { ENGAGEMENT_KEYS } from '../core/engagement.js';
 import { currentTheme, applyTheme } from '../core/themes.js';
 import { t, currentLang, setLanguage, LANGUAGES } from '../i18n/index.js';
+
+// Public pages (GitHub Pages) and support address.
+const PRIVACY_URL = 'https://imroulofficial.github.io/my-teacher-life/privacy-policy.html';
+const TERMS_URL = 'https://imroulofficial.github.io/my-teacher-life/terms.html';
+const SUPPORT_EMAIL = 'mdimroulhassanofficial@gmail.com';
+
+/** Opens a web page in the device's browser (Custom Tab on Android); falls back to window.open. */
+async function openLink(url) {
+  if (navigator.onLine === false) toast(t('settings.needsInternet'));
+  try {
+    await Browser.open({ url });
+  } catch (e) {
+    if (!window.open(url, '_blank', 'noopener')) window.location.href = url;
+  }
+}
+
+/** Opens the email app with a pre-filled subject (Capacitor hands mailto: links to Android). */
+function openSupportEmail() {
+  window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('My Teacher Life - Support')}`;
+}
+
+/** Settings row that acts like a link: label on the left, chevron on the right. */
+function linkRow(label, onClick) {
+  return h(
+    'button',
+    {
+      class: 'setting-row link-row',
+      onclick: () => {
+        sfx('tap');
+        onClick();
+      },
+    },
+    h('span', {}, label),
+    h('span', { class: 'link-chevron', 'aria-hidden': 'true' }, '›'),
+  );
+}
+
+/** Installed version on a phone (Android versionName); the web build falls back to config. */
+async function appVersion() {
+  try {
+    return (await App.getInfo()).version || APP.version;
+  } catch (e) {
+    return APP.version;
+  }
+}
+
+async function showAbout() {
+  const version = await appVersion();
+  modal({
+    title: t('settings.aboutTitle'),
+    cls: 'about-modal',
+    body: h(
+      'div',
+      { class: 'about' },
+      h('div', { class: 'text-4xl' }, '🖍️'),
+      h('div', { class: 'font-bold text-xl' }, APP.name),
+      h('div', {}, t('settings.version', { v: version })),
+      h('div', { class: 'about-line' }, t('settings.developer', { studio: APP.studio })),
+      h('div', { class: 'about-line' }, t('settings.madeIn')),
+      h('a', { class: 'about-mail', href: `mailto:${SUPPORT_EMAIL}` }, SUPPORT_EMAIL),
+      h('div', { class: 'opacity-70 text-sm mt-2' }, t('settings.offlineNote')),
+      h('div', { class: 'about-copy' }, t('settings.rights', { studio: APP.studio })),
+    ),
+    buttons: [{ label: t('common.ok'), color: 'green' }],
+  });
+}
 
 function toggle(label, key) {
   const s = getState();
@@ -80,6 +148,9 @@ export default {
       toggle(t('settings.sound'), 'sound'),
       toggle(t('settings.vibration'), 'vibration'),
       privacyRow,
+      linkRow(t('settings.privacyPolicy'), () => openLink(PRIVACY_URL)),
+      linkRow(t('settings.terms'), () => openLink(TERMS_URL)),
+      linkRow(t('settings.contact'), openSupportEmail),
       h(
         'div',
         { class: 'setting-row' },
@@ -103,15 +174,7 @@ export default {
           },
         }),
       ),
-      h(
-        'div',
-        { class: 'about' },
-        h('div', { class: 'text-4xl' }, '🖍️'),
-        h('div', { class: 'font-bold text-xl' }, t('appName')),
-        h('div', {}, t('settings.version', { v: APP.version })),
-        h('div', { class: 'opacity-70' }, t('settings.madeBy', { studio: APP.studio })),
-        h('div', { class: 'opacity-70 text-sm mt-2' }, t('settings.offlineNote')),
-      ),
+      linkRow(t('settings.about'), showAbout),
     );
     root.append(bar, panel);
     return () => bar.destroy();

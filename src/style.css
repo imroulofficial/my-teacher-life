@@ -2975,3 +2975,19 @@ input {
   .ch-intro-desc { font-size: 15px; margin: 4px 0; }
   .ch-intro-game-icon { font-size: 22px; }
 }
+
+/* ---------------------------------------------------------------- Settings: legal / support links */
+.link-row {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.link-row:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08); }
+.link-chevron { font-size: 26px; line-height: 1; font-weight: 700; color: #94a3b8; }
+.about-modal .about { margin-top: 0; padding: 4px 0 0; }
+.about-line { opacity: 0.8; }
+.about-mail { display: inline-block; margin-top: 4px; color: #c2410c; font-weight: 600; text-decoration: underline; word-break: break-all; }
+.about-copy { margin-top: 10px; font-size: 13px; opacity: 0.6; }
