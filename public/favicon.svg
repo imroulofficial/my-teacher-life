@@ -1,1 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#ff9f1c"/><text x="32" y="46" font-size="40" text-anchor="middle">🖍️</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Red Pen Studio logo">
+  <title>Red Pen Studio</title>
+  <defs>
+    <!-- Slit and breather hole are cut out, so the background shows through -->
+    <mask id="rps-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="128" height="128">
+      <rect width="128" height="128" fill="#fff"/>
+      <path d="M62.25 14 H65.75 V54 H62.25 Z" fill="#000"/>
+      <circle cx="64" cy="60" r="7" fill="#000"/>
+    </mask>
+  </defs>
+  <!-- Nib, pointing up like an arrow: light left facet, dark right facet -->
+  <g mask="url(#rps-cut)">
+    <path d="M64 6 L28 60 L46 96 L64 84 Z" fill="#E63946"/>
+    <path d="M64 6 L100 60 L82 96 L64 84 Z" fill="#B3202E"/>
+  </g>
+  <!-- Text-cursor underscore -->
+  <rect x="34" y="106" width="60" height="12" rx="2" fill="#1D3557"/>
+</svg>
