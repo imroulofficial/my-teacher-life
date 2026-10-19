@@ -109,8 +109,19 @@ input {
   transition: opacity 0.35s;
 }
 .splash-logo {
-  font-size: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
   animation: bob 1.2s ease-in-out infinite;
+}
+.splash-logo img {
+  width: 72px;
+  height: 72px;
 }
 .splash-title {
   font-size: 40px;
@@ -2988,6 +2999,7 @@ input {
 .link-row:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08); }
 .link-chevron { font-size: 26px; line-height: 1; font-weight: 700; color: #94a3b8; }
 .about-modal .about { margin-top: 0; padding: 4px 0 0; }
+.about-logo { display: block; width: 44px; height: 44px; margin: 0 auto; }
 .about-line { opacity: 0.8; }
 .about-mail { display: inline-block; margin-top: 4px; color: #c2410c; font-weight: 600; text-decoration: underline; word-break: break-all; }
 .about-copy { margin-top: 10px; font-size: 13px; opacity: 0.6; }

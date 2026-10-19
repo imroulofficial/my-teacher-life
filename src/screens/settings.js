@@ -65,7 +65,7 @@ async function showAbout() {
     body: h(
       'div',
       { class: 'about' },
-      h('div', { class: 'text-4xl' }, '🖍️'),
+      h('img', { class: 'about-logo', src: './logo.svg', alt: '', width: 128, height: 128 }),
       h('div', { class: 'font-bold text-xl' }, APP.name),
       h('div', {}, t('settings.version', { v: digits(version) })),
       h('div', { class: 'about-line' }, t('settings.developer', { studio: APP.studio })),
